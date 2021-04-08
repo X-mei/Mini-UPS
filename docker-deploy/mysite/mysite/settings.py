@@ -25,7 +25,7 @@ SECRET_KEY = '9!i_3s+k3j$ngwo=p_r&nld_it4j6@m3g)q!ia6m7!ad2_s=i!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','vcm-18172.vm.duke.edu']
+ALLOWED_HOSTS = ['web','127.0.0.1','vcm-18172.vm.duke.edu']
 
 
 # Application definition
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ups',
 ]
 
 MIDDLEWARE = [
