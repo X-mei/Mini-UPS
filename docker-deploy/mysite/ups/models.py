@@ -1,3 +1,52 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
+# Reference: https://docs.djangoproject.com/en/3.1/topics/auth/customizing/#writing-a-manager-for-a-custom-user-model
+class UserManager(BaseUserManager):
+    def create_user(self, username, email, password, **other_fields):
+        """
+        Create and save a user.
+        All fields required.
+        """
+        if not username or not email:
+            raise ValueError(_('The email and username must be set.'))
+        email = self.normalize_email(email)
+
+        user = self.model(username=username, email=email, **other_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, username, email, password, **other_fields):
+        other_fields.setdefault('is_staff', True)
+        other_fields.setdefault('is_superuser', True)
+        other_fields.setdefault('is_active', True)
+
+        if other_fields.get('is_staff') is not True:
+            raise ValueError(_('superuser should have staff permission.'))
+        if other_fields.get('is_superuser') is not True:
+            raise ValueError(_('superuser should have superuser permission.'))
+        if other_fields.get('is_active') is not True:
+            raise ValueError(_('superuser should have active permission.'))
+        return self.create_user(username, email, password, **other_fields)
+
+
+class User(AbstractBaseUser):
+    """
+    A customized user model designed for this project.
+    Every User should have three fields: username, email, password.
+    """
+    username = models.CharField(max_length=40, unique=True, blank=False)
+    email = models.EmailField(_('email address'), blank=False, unique=True)
+    is_staff = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    # The user can access its shared rides by
+    USERNAME_FIELD = 'username'
+    EMAIL_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    objects = UserManager()
+
+    def __str__(self):
+        return self.username
