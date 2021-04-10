@@ -19,3 +19,7 @@ class UserForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(label="Username", max_length=128, widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Username'}))
     password = forms.CharField(label="Password", max_length=256, widget=forms.PasswordInput(attrs={'class': 'form__input', 'placeholder': 'Password'}))
+
+
+class TrackPackageForm(forms.Form):
+    package_id = forms.IntegerField(label="Package ID", widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Package ID'}))

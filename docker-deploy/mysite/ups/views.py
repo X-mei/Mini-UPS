@@ -7,6 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
+from .models import *
 
 # Create your views here.
 def show_index(request):
@@ -115,5 +116,44 @@ def user_login(request):
 
 @login_required
 def user_logout(request):
-    logout(request)
+    
+    #logout(request)
+    request.session.flush()
     return HttpResponseRedirect(reverse('ups:index'))
+
+
+@csrf_protect
+def track_package(request):
+    if request.method == "POST":
+        track_package_form = TrackPackageForm(request.POST)
+        if track_package_form.is_valid():
+            tracking_number = track_package_form.cleaned_data['package_id']
+            if Package.objects.filter(package_id = tracking_number).count() == 0:               
+                messages.error(request, 'The tracking number you entered is not valid. Please input again or contact the sender to verify the number.')
+                track_package_form = TrackPackageForm()
+                return render(request, 'ups/track_package.html', {'track_package_form': track_package_form})
+               # return render(request, 'ups/track_package.html', locals())          
+            context = {
+                'package' : Package.objects.get(package_id = tracking_number)
+            }
+            #TODO: Need to change the render later.
+            return render(request, 'ups/show_track_result.html', context)
+        return render(request, 'ups/track_package.html', locals())
+    track_package_form = TrackPackageForm(request.POST)
+    return render(request, 'ups/track_package.html', locals())
+
+
+@csrf_protect
+def see_packages(request):
+    #Users can access this function only after they log in.
+    if not request.session.get('is_login',None):  
+        return redirect('/login')
+    else:
+        request_user = User.objects.get(id=request.user.id)
+        context = {
+            'packages' : Package.objects.filter(user = request_user)
+        }
+        return render(request, 'ups/see_packages.html', context)
+
+
+    

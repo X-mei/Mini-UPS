@@ -50,3 +50,20 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+
+
+class Package(models.Model):
+    PACKAGE_STATUS = [
+    ("created", "created"),
+    ("in the warehouse", "in the warehouse"),
+    ("out for delivery", "out for delivery"),
+    ("delivered", "delivered")
+    ]
+    package_id = models.IntegerField()
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name = "package_set")
+    package_status = models.CharField(max_length = 30, choices = PACKAGE_STATUS, default = 'created')
+    dest_x = models.IntegerField(null=True)
+    dest_y = models.IntegerField(null=True)
+    truck_id = models.IntegerField(null=True)
+    def __str__(self):
+        return f'{self.package_id}'
