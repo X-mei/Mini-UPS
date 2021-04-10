@@ -18,6 +18,7 @@ from django.urls import path, include
 from ups import views
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.show_index, name="home"),
     path('', include('ups.urls')),
     #path('logout/', views.logout, name='logout'),
 ]

@@ -13,7 +13,6 @@
 		<noscript><link rel="stylesheet" href="/static/ups/assets/css/noscript.css"/></noscript>
 	</head>
 	<body class="is-preload">
-
 		<!-- Sidebar -->
 			<section id="sidebar">
 				<div class="inner">
@@ -28,6 +27,7 @@
 				</div>
 			</section>
 
+			
 		<!-- Wrapper -->
 			<div id="wrapper">
 
@@ -41,9 +41,16 @@
 							-->
 							<p>Welcome to UPS(Not really), we ship the world around.<br />
 								You can track your package with a tracking number or log in to view more details.</p>
+							{% if user.is_authenticated %}
 							<ul class="actions">
-								<li><a href="/login" class="button scrolly">Regsiter Now</a></li>
+								<li><a href="/logout" class="button scrolly">Logout</a></li>
 							</ul>
+							{% else %}
+							<ul class="actions">
+								<li><a href="/login" class="button scrolly">Log in</a></li>
+								<li><a href="/register" class="button scrolly">Sign up</a></li>
+							</ul>
+							{% endif %}
 						</div>
 					</section>
 
