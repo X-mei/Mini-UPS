@@ -41,7 +41,7 @@
 							-->
 							<p>Welcome to UPS(Not really), we ship the world around.<br />
 								You can track your package with a tracking number or log in to view more details.</p>
-							{% if user.is_authenticated %}
+							{% if request.session.is_login %}
 							<ul class="actions">
 								<li><a href="/logout" class="button scrolly">Logout</a></li>
 							</ul>

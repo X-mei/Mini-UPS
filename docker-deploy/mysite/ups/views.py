@@ -62,31 +62,6 @@ def user_register(request):
     register_form = UserForm()
     return render(request, 'ups/register.html', locals())
 
-    '''
-    """
-    A view to provide the form for user to register.
-    """
-    if request.method == 'POST':
-        # Get the form.
-        form = UserForm(data=request.POST)
-        if form.is_valid():
-            # We should save it as a user object.
-            user = form.save()
-            # Set its password.
-            user.set_password(user.password)
-            user.save()
-            # We should test the user whether the register is success or not.
-            return HttpResponseRedirect(reverse('ups:login'))
-        else:
-            # There are errors inside the fields.
-            print(form.errors)
-
-    else:
-        # Display the form for register.
-        form = UserForm()
-    
-    return render(request, 'ups/register.html', {'form': form})
-    '''
 @csrf_protect
 def user_login(request):
     if request.session.get('is_login',None):
@@ -101,8 +76,7 @@ def user_login(request):
                 user = User.objects.get(username=username)
                 if user.password == password:
                     request.session['is_login'] = True
-                    request.session['user_id'] = user.id
-                    request.session['user_name'] = user.name
+                    request.session['user_name'] = user.username
                     return redirect('/index')
                 else:
                     message = "Wrong password！"
@@ -116,7 +90,9 @@ def user_login(request):
 
 @login_required
 def user_logout(request):
-    
+    if not request.session.get('is_login', None):
+        # If not logged in, no need to log out
+        return redirect("/index")
     #logout(request)
     request.session.flush()
     return HttpResponseRedirect(reverse('ups:index'))
