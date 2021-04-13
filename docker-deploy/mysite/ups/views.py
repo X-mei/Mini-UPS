@@ -57,7 +57,6 @@ def user_register(request):
                 new_user.save()
                 # We should test the user whether the register is success or not.
                 return HttpResponseRedirect(reverse('ups:login'))
-                return redirect('/login') 
 
     register_form = UserForm()
     return render(request, 'ups/register.html', locals())
@@ -88,11 +87,10 @@ def user_login(request):
     return render(request, 'ups/login.html', locals())
 
 
-#@login_required
 def user_logout(request):
     if not request.session.get('is_login', None):
         # If not logged in, no need to log out
-        return redirect("/index")
+        return redirect('/index')
     #logout(request)
     request.session.flush()
     return HttpResponseRedirect(reverse('ups:index'))
