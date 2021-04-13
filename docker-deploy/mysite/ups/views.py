@@ -88,7 +88,7 @@ def user_login(request):
     return render(request, 'ups/login.html', locals())
 
 
-@login_required
+#@login_required
 def user_logout(request):
     if not request.session.get('is_login', None):
         # If not logged in, no need to log out
@@ -125,11 +125,30 @@ def see_packages(request):
     if not request.session.get('is_login',None):  
         return redirect('/login')
     else:
-        request_user = User.objects.get(id=request.user.id)
+        request_user = User.objects.get(username=request.session.get('user_name', None))
         context = {
             'packages' : Package.objects.filter(user = request_user)
         }
         return render(request, 'ups/see_packages.html', context)
 
+@csrf_protect
+def modify_destination_x(request, package_id):
+    if request.method == "POST":
+        modify_destination_x_form = ModifyDestinationXForm(request.POST, instance = Package.objects.filter(id = package_id)[0])
+        if modify_destination_x_form.is_valid():
+          modify_destination_x_form.save()
+          return redirect('see_packages')
+    else:
+        modify_destination_x_form = ModifyDestinationXForm()
+    return render(request, 'ups/modify_destination_x.html', {'modify_destination_x_form': modify_destination_x_form})
 
-    
+@csrf_protect
+def modify_destination_y(request, package_id):
+    if request.method == "POST":
+        modify_destination_y_form = ModifyDestinationYForm(request.POST, instance = Package.objects.filter(id = package_id)[0])
+        if modify_destination_y_form.is_valid():
+          modify_destination_y_form.save()
+          return redirect('see_packages')
+    else:
+        modify_destination_y_form = ModifyDestinationYForm()
+    return render(request, 'ups/modify_destination_y.html', {'modify_destination_y_form': modify_destination_y_form})

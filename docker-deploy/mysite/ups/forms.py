@@ -1,5 +1,5 @@
 from django import forms
-from .models import User
+from .models import *
 
 class UserForm(forms.ModelForm):
     """
@@ -23,3 +23,19 @@ class LoginForm(forms.Form):
 
 class TrackPackageForm(forms.Form):
     package_id = forms.IntegerField(label="Package ID", widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Package ID'}))
+
+class ModifyDestinationXForm(forms.ModelForm):
+    dest_x = forms.IntegerField(label="Destination X", widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Destination X'}))
+    class Meta:
+        model = Package
+        fields = ['dest_x']
+        # labels = {
+        #   "dest_x": "The X coordinate of destination",
+        # }
+       # widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Package ID'})
+
+class ModifyDestinationYForm(forms.ModelForm):
+    dest_y = forms.IntegerField(label="Destination Y", widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Destination Y'}))
+    class Meta:
+        model = Package
+        fields = ['dest_y']
