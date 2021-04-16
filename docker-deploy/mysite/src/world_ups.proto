@@ -4,6 +4,7 @@ message UInitTruck{
   required int32 x=2;
   required int32 y=3;
 }
+
 message UConnect{
   optional int64 worldid = 1;
   repeated UInitTruck trucks=2;
