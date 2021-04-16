@@ -75,7 +75,7 @@ message ACommands {
   repeated AQuery queries = 4;
   optional uint32 simspeed = 5; 
   optional bool disconnect = 6;
-  repeated int64 acks =7;
+  repeated int64 acks = 7;
 }
 
 message AResponses {
