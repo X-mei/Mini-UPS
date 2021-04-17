@@ -31,6 +31,11 @@ class UserManager(BaseUserManager):
             raise ValueError(_('superuser should have active permission.'))
         return self.create_user(username, email, password, **other_fields)
 
+class Truck(models.Model):
+    truck_id=models.IntegerField(primary_key=True)
+    x=models.IntegerField()
+    y=models.IntegerField()
+    status=models.TextField()
 
 class User(AbstractBaseUser):
     """
