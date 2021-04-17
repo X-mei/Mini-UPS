@@ -51,20 +51,22 @@
                                         </tr>
                                         <tr>
                                             <td>Destination X</td>
-											<!--TODO: Need to change the hyperlink-->
-                                            <td>{%if package.package_status == 'in the warehouse'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
-												{%if package.package_status == 'created'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
-												{%if package.package_status == 'out for delivery'%}{{ package.dest_x }}{%endif%}
+                                            <td>{%if package.package_status == 'packing'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'packed'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'loading'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'loaded'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'delivering'%}{{ package.dest_x }}{%endif%}
 												{%if package.package_status == 'delivered'%}{{ package.dest_x }}{%endif%}
-											</td>
-											
+											</td>						
                                         </tr>
                                         <tr>
                                             <td>Destination Y</td>
-                                            <td>{%if package.package_status == 'in the warehouse'%}<a href = "{% url 'ups:modify_destination_y' package.id%}">{{ package.dest_y }}</a>(click to modify){%endif%}
-												{%if package.package_status == 'created'%}<a href = "{% url 'ups:modify_destination_y' package.id%}">{{ package.dest_y }}</a>(click to modify){%endif%}
-												{%if package.package_status == 'out for delivery'%}{{ package.dest_y }}{%endif%}
-												{%if package.package_status == 'delivered'%}{{ package.dest_y }}{%endif%}
+                                            <td>{%if package.package_status == 'packing'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'packed'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'loading'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'loaded'%}<a href = "{% url 'ups:modify_destination_x' package.id%}">{{ package.dest_x }}</a>(click to modify){%endif%}
+												{%if package.package_status == 'delivering'%}{{ package.dest_x }}{%endif%}
+												{%if package.package_status == 'delivered'%}{{ package.dest_x }}{%endif%}
 											</td>
                                         </tr>
                                       </tbody>

@@ -52,18 +52,41 @@ class User(AbstractBaseUser):
         return self.username
 
 
+class Truck(models.Model):
+    TRUCK_STATUS = [
+    ("idle", "idle"),
+    ("in route to a warehouse", "in route to a warehouse"),
+    ("invalid", "invalid"),
+    ("delivering", "delivering"),
+    ("waiting for pickup", "waiting for pickup"),
+    ]
+    truck_id=models.IntegerField(primary_key=True)
+    x=models.IntegerField()
+    y=models.IntegerField()
+    truck_status = models.CharField(max_length = 30, choices = TRUCK_STATUS, default = 'idle')
+
+
+class Product(models.Model):
+    product_id = models.IntegerField(primary_key=True)
+    product_description = models.TextField()
+
+
 class Package(models.Model):
     PACKAGE_STATUS = [
-    ("created", "created"),
-    ("in the warehouse", "in the warehouse"),
-    ("out for delivery", "out for delivery"),
+    ("packing", "packing"),
+    ("packed", "packed"),
+    ("loading", "loading"),
+    ("loaded", "loaded"),
+    ("delivering", "delivering"),
     ("delivered", "delivered")
     ]
     package_id = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name = "package_set")
-    package_status = models.CharField(max_length = 30, choices = PACKAGE_STATUS, default = 'created')
+    package_status = models.CharField(max_length = 30, choices = PACKAGE_STATUS, default = 'packing')
     dest_x = models.IntegerField(null=True)
     dest_y = models.IntegerField(null=True)
-    truck_id = models.IntegerField(null=True)
+    #truck_id = models.IntegerField(null=True)
+    truck=models.ForeignKey(Truck, on_delete=models.SET_NULL, null=True)
+    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return f'{self.package_id}'
