@@ -60,10 +60,10 @@ class User(AbstractBaseUser):
 class Truck(models.Model):
     TRUCK_STATUS = [
     ("idle", "idle"),
-    ("in route to a warehouse", "in route to a warehouse"),
-    ("invalid", "invalid"),
-    ("delivering", "delivering"),
-    ("waiting for pickup", "waiting for pickup"),
+    ("travelling", "travelling"),
+    ("arrive warehouse", "arrive warehouse"),
+    ("loading", "loading"),
+    ("delivering", "delivering")
     ]
     truck_id=models.IntegerField(primary_key=True)
     x=models.IntegerField()
