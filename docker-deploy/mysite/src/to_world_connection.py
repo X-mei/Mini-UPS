@@ -5,7 +5,38 @@ from ups.models import Truck, Package
 import threading
 
 class World(MySocket):
+    
+    def init(self, count):
+        connect = world_ups_pb2.UConnect()
+        connected = world_ups_pb2.UConnected()
+        ######### Need add these truck to database ########
+        for i in range(count):
+            newtruck = connect.trucks.add()
+            newtruck.id = i+1
+            newtruck.x = 1
+            newtruck.y = 1
+        connect.isAmazon = Flase
+        self.send_data(connect)
+        self.recv_data(connected)
+        print(connected.result)
+        self.world_id = connected.worldid
+        th_handler = threading.Thread(target=self.handler, args=())
+        th_handler.setDaemon(True)
+        th_handler.start()
+
+    
+    def generate_world(self, sendworld):
+        sendworld.worldid = self.worldid
+        return sendworld
+        
+
+    def set_amazon(self, amazon):
+        self.amazon = amazon
+
+        
+
     def handler(self):
+        print("Handling response...")
         while True:
             response = world_ups_pb2.UResponses()
             self.recv_data(response)
@@ -18,6 +49,7 @@ class World(MySocket):
         command = world_ups_pb2.UCommands()
         command.simspeed = simspeed
         return command
+
 
     ## To Parse UResponses
     def parse_responses(self, response):
@@ -34,10 +66,10 @@ class World(MySocket):
     # Parse UFinished
     def parse_finished(self, response):
         res_to_world = self.generate_command()
-        # Update status of all trucks
         for fin in response.completions:
             if fin.seqnum not in self.recv_msg:
                 self.recv_msg.add(fin.seqnum)
+                # Update status of all trucks
                 truck_id = fin.truckid
                 coor_x = fin.x
                 coor_y = fin.y
@@ -48,6 +80,15 @@ class World(MySocket):
                 curr_truck.status = stat
                 curr_truck.save()
                 res_to_world.acks.append(fin.seqnum)
+                # Send pick up received if status is "arrive warehouse"
+                curr_pack = Package.objects.get(truck=truck_id)
+                if stat == 'arrive warehouse':
+                    ########### Need to generate a tracking number ############
+                    self.amazon.generate_pick_recv(curr_pack.package_id, curr_pack.tracking_num, curr_pack.truck)
+                # Do nothing if its a completion of all deliveries
+                else:
+                    print("Error with status.")
+
         self.send_data(res_to_world)
 
 
@@ -65,6 +106,8 @@ class World(MySocket):
                 curr_package.package_status = stat
                 curr_package.save()
                 res_to_world.acks.append(delv.seqnum)
+                # Send package delivered message
+                self.amazon.generate_pack_delv(curr_pack.package_id)
         self.send_data(res_to_world)
     
 

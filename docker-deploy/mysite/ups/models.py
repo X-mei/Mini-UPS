@@ -79,7 +79,7 @@ class Package(models.Model):
     dest_y = models.IntegerField(null=True)
     wh_id = models.IntegerField()
     wh_x = models.IntegerField()
-    wh_y = models.IntegerField()s
+    wh_y = models.IntegerField()
     #truck_id = models.IntegerField(null=True)
     truck=models.ForeignKey(Truck, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
