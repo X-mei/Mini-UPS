@@ -62,7 +62,6 @@ class Product(models.Model):
     product_description = models.TextField()
     product_count = models.IntegerField()
 
-
 class Package(models.Model):
     PACKAGE_STATUS = [
     ("packing", "packing"),
@@ -73,15 +72,14 @@ class Package(models.Model):
     ("delivered", "delivered")
     ]
     package_id = models.IntegerField()
+    tracking_num = models.IntegerField()
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name = "package_set")
     package_status = models.CharField(max_length = 30, choices = PACKAGE_STATUS, default = 'packing')
     dest_x = models.IntegerField(null=True)
     dest_y = models.IntegerField(null=True)
     wh_id = models.IntegerField()
-    wh_x = models.IntegerField()
-    wh_y = models.IntegerField()s
     #truck_id = models.IntegerField(null=True)
     truck=models.ForeignKey(Truck, on_delete=models.SET_NULL, null=True)
-    product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    #product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
     def __str__(self):
         return f'{self.package_id}'
