@@ -13,6 +13,7 @@ class MySocket():
         self.seq_num = 0
         self.seq_dict = dict()
         self.recv_msg = set()
+        # Resend mechanism
         th_resend = threading.Thread(target=self.resend, args=())
         th_resend.setDaemon(True)
         th_resend.start()
