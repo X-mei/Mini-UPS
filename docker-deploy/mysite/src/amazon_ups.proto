@@ -1,0 +1,73 @@
+syntax = "proto2";
+message USendWorldId {
+ required int64 worldid = 1;
+ required int64 seqnum = 2;
+}
+message AGotWorldId {
+ required int64 acks = 1;
+}
+
+message Product {
+ required int64 id = 1;
+ required string description = 2;
+ required int32 count = 3;
+}
+
+message ARequirePickup {
+ required string upsaccount = 1;
+ required int32 whnum = 2; //warehouse number
+ optional int32 x = 3;
+ optional int32 y = 4;
+ required int64 shipid = 5;
+ repeated Product products = 6;
+ required int64 seqnum = 7;
+}
+
+message UPickupReceived {
+ required int64 shipid = 1;
+ required string trackingnum = 2;
+ required int64 truckid = 3;
+ required int64 seqnum = 4; 
+}
+
+
+message APackLoaded {
+ required int64 shipid = 1;
+ required int32 truckid = 2;
+ required int32 x = 3;
+ required int32 y = 4;
+ required int64 seqnum = 5;
+}
+
+
+message UPackLoaded {
+ required int64 shipid = 1;
+ required int64 seqnum = 2;
+}
+
+message UPackDelivered {
+ required int64 shipid = 1;
+ required int64 seqnum = 2;
+}
+
+
+message Err{
+ required string err = 1;
+ required int64 originseqnum = 2;
+ required int64 seqnum = 3;
+}
+
+message AMessage {
+ repeated ARequirePickup reqPickup = 1;
+ repeated APackLoaded reqPackLoaded = 2;
+ repeated int64 acks = 3;
+ repeated Err error = 4;
+}
+
+message UMessage {
+ repeated UPickupReceived pickupReceived = 1;
+ repeated UPackLoaded resPackLoaded = 2;
+ repeated UPackDelivered reqPackDelivered = 3;
+ repeated int64 acks = 4;
+ repeated Err error = 5;
+}
