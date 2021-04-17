@@ -57,23 +57,10 @@ class User(AbstractBaseUser):
         return self.username
 
 
-class Truck(models.Model):
-    TRUCK_STATUS = [
-    ("idle", "idle"),
-    ("travelling", "travelling"),
-    ("arrive warehouse", "arrive warehouse"),
-    ("loading", "loading"),
-    ("delivering", "delivering")
-    ]
-    truck_id=models.IntegerField(primary_key=True)
-    x=models.IntegerField()
-    y=models.IntegerField()
-    truck_status = models.CharField(max_length = 30, choices = TRUCK_STATUS, default = 'idle')
-
-
 class Product(models.Model):
     product_id = models.IntegerField(primary_key=True)
     product_description = models.TextField()
+    product_count = models.IntegerField()
 
 
 class Package(models.Model):
@@ -90,6 +77,9 @@ class Package(models.Model):
     package_status = models.CharField(max_length = 30, choices = PACKAGE_STATUS, default = 'packing')
     dest_x = models.IntegerField(null=True)
     dest_y = models.IntegerField(null=True)
+    wh_id = models.IntegerField()
+    wh_x = models.IntegerField()
+    wh_y = models.IntegerField()s
     #truck_id = models.IntegerField(null=True)
     truck=models.ForeignKey(Truck, on_delete=models.SET_NULL, null=True)
     product = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)

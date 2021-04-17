@@ -22,3 +22,8 @@ def find_truck():
     conn.close()
     return result[0]
 
+
+def create_package(package, truck_id):
+    conn = db_connect()
+    cur = conn.cursor()
+    
