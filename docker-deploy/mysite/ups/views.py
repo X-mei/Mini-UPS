@@ -101,14 +101,14 @@ def track_package(request):
     if request.method == "POST":
         track_package_form = TrackPackageForm(request.POST)
         if track_package_form.is_valid():
-            tracking_number = track_package_form.cleaned_data['package_id']
-            if Package.objects.filter(package_id = tracking_number).count() == 0:               
+            tracking_number = track_package_form.cleaned_data['tracking_number']
+            if Package.objects.filter(tracking_num = tracking_number).count() == 0:               
                 messages.error(request, 'The tracking number you entered is not valid. Please input again or contact the sender to verify the number.')
                 track_package_form = TrackPackageForm()
                 return render(request, 'ups/track_package.html', {'track_package_form': track_package_form})
                # return render(request, 'ups/track_package.html', locals())          
             context = {
-                'package' : Package.objects.get(package_id = tracking_number)
+                'package' : Package.objects.get(tracking_num = tracking_number)
             }
             #TODO: Need to change the render later.
             return render(request, 'ups/show_track_result.html', context)
@@ -135,7 +135,7 @@ def modify_destination_x(request, package_id):
         modify_destination_x_form = ModifyDestinationXForm(request.POST, instance = Package.objects.filter(id = package_id)[0])
         if modify_destination_x_form.is_valid():
           modify_destination_x_form.save()
-          return redirect('see_packages')
+          return redirect('/see_packages')
     else:
         modify_destination_x_form = ModifyDestinationXForm()
     return render(request, 'ups/modify_destination_x.html', {'modify_destination_x_form': modify_destination_x_form})
@@ -146,7 +146,16 @@ def modify_destination_y(request, package_id):
         modify_destination_y_form = ModifyDestinationYForm(request.POST, instance = Package.objects.filter(id = package_id)[0])
         if modify_destination_y_form.is_valid():
           modify_destination_y_form.save()
-          return redirect('see_packages')
+          return redirect('/see_packages')
     else:
         modify_destination_y_form = ModifyDestinationYForm()
     return render(request, 'ups/modify_destination_y.html', {'modify_destination_y_form': modify_destination_y_form})
+
+
+@csrf_protect
+def see_products(request, package_id):
+    package = Package.objects.filter(id = package_id)[0]
+    context = {
+        'products' : package.product_set.all()
+    }
+    return render(request, 'ups/see_products.html', context)

@@ -22,7 +22,7 @@ class LoginForm(forms.Form):
 
 
 class TrackPackageForm(forms.Form):
-    package_id = forms.IntegerField(label="Package ID", widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Package ID'}))
+    tracking_number = forms.CharField(label="Tracking Number", widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Tracking Number'}))
 
 class ModifyDestinationXForm(forms.ModelForm):
     dest_x = forms.IntegerField(label="Destination X", widget=forms.TextInput(attrs={'class': 'form__input', 'placeholder': 'Destination X'}))

@@ -34,7 +34,7 @@
 						<div class="inner">
 							<h1 class="major">Track a Package</h1>
 <!--							<span class="image fit"><img src="/static/ups/images/pic04.jpg" alt="" /></span> -->
-							<p>Please input the package number that you want to track:</p>
+							<p>Please input the tracking number that you want to track:</p>
 							{% if messages %}
 								<div style = "text-align: center; color: red; font-size: 20px; z-index:9999;">
 									{% for message in messages %}
@@ -45,7 +45,7 @@
 							<form class="form" method="post">
 								{% csrf_token %}
 								<div class="form__group">
-									{{ track_package_form.package_id }}
+									{{ track_package_form.tracking_number }}
 								</div>
 							</br>
 							<div style="text-align: center;">
