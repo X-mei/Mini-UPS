@@ -17,7 +17,7 @@ class Server():
         self.world.init(5)
         self.amazon.setup_server(world_host, amazon_port)
         self.amazon.accept_connection()
-        self.world.set_amazon(amazon)
-        self.amazon.set_world(world)
+        self.world.set_amazon(self.amazon)
+        self.amazon.set_world(self.world)
         self.amazon.init()
 

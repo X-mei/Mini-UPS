@@ -16,26 +16,26 @@ class Amazon(MySocket):
         sendworld = amazon_ups_pb2.USendWorldId()
         sendworld = self.world.generate_world(sendworld)
         sendworld.seqnum = self.seq_num
-        self.seq_dict[self.seq_num] = res_to_world
+        self.seq_dict[self.seq_num] = sendworld
         self.seq_num += 1
         self.send_data_amazon(sendworld)
         self.make_sure_world_send()
-        th_handler = threading.Thread(target=self.handler, args=())
+        th_handler = threading.Thread(target=self.handler_amazon, args=())
         th_handler.setDaemon(True)
         th_handler.start()
 
 
     def make_sure_world_send(self):
-        gotworld = amazon_ups_pb2.AGotWorldId()
-        self.recv_data_amazon(gotworld)
-        self.seq_dict.pop(gotworld.acks, None)
+        gotworId = amazon_ups_pb2.AGotWorldId()
+        self.recv_data_amazon(gotworId)
+        self.seq_dict.pop(gotworId.acks, None)
 
 
     def set_world(self, world):
         self.world = world
 
 
-    def handler(self):
+    def handler_amazon(self):
         print("Handling request...")
         while True:
             request = amazon_ups_pb2.AMessage()

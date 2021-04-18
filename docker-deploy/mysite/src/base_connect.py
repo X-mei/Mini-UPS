@@ -79,8 +79,8 @@ class MySocket():
 
     def send_data_amazon(self, message):
         data = message.SerializeToString()
-        _EncodeVarint(self.sock.send, len(data), None)
-        self.sock.send(data)  
+        _EncodeVarint(self.amazon_sock.send, len(data), None)
+        self.amazon_sock.send(data)
 
 
     def resend_data(self):
@@ -97,5 +97,5 @@ class MySocket():
 
 
     def __del__(self):
-        print("Closing connection...")
+        print("Closing connection from...")
         self.sock.close()

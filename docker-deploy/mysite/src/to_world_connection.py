@@ -8,7 +8,7 @@ class World(MySocket):
     
     def init(self, count):
         # Resend mechanism
-        th_resend = threading.Thread(target=self.resend_data, args=())
+        th_resend = threading.Thread(target=self.resend_data_amazon, args=())
         th_resend.setDaemon(True)
         th_resend.start()
 
@@ -33,14 +33,13 @@ class World(MySocket):
 
     
     def generate_world(self, sendworld):
-        sendworld.worldid = self.worldid
+        sendworld.worldid = self.world_id
         return sendworld
         
 
     def set_amazon(self, amazon):
         self.amazon = amazon
 
-        
 
     def handler(self):
         print("Handling response...")

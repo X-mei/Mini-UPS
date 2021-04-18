@@ -11,9 +11,11 @@ from .models import *
 from src.server import Server
 
 print("Initiating server...")
-try:
+count = 1
+if count == 1:
     server = Server()
-except:
+    count += 1
+else:
     pass
 
 # Create your views here.
