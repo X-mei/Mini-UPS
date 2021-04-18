@@ -31,13 +31,13 @@ ALLOWED_HOSTS = ["web","127.0.0.1","localhost","vcm-19617.vm.duke.edu","vcm-1817
 # Application definition
 
 INSTALLED_APPS = [
+    'ups',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'ups',
 ]
 
 MIDDLEWARE = [

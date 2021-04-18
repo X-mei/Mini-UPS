@@ -18,3 +18,4 @@ urlpatterns = [
     path('see_products/<int:package_id>', views.see_products, name='see_products'),
     path('elements/', views.show_elements, name='elements'),
 ]
+

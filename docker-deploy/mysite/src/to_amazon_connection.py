@@ -1,18 +1,24 @@
 from .base_connect import MySocket
-import world_ups_pb2
-import amazon_ups_pb2
+from . import amazon_ups_pb2
+from . import world_ups_pb2
 from ups.models import Truck, Package, Product
+from .database import *
 import threading
 
-class Amazon(Base):
+class Amazon(MySocket):
 
     def init(self):
+        # Resend mechanism
+        th_resend = threading.Thread(target=self.resend_data_amazon, args=())
+        th_resend.setDaemon(True)
+        th_resend.start()
+
         sendworld = amazon_ups_pb2.USendWorldId()
         sendworld = self.world.generate_world(sendworld)
         sendworld.seqnum = self.seq_num
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1
-        self.send_data(sendworld)
+        self.send_data_amazon(sendworld)
         self.make_sure_world_send()
         th_handler = threading.Thread(target=self.handler, args=())
         th_handler.setDaemon(True)
@@ -21,7 +27,7 @@ class Amazon(Base):
 
     def make_sure_world_send(self):
         gotworld = amazon_ups_pb2.AGotWorldId()
-        self.recv_data(gotworld)
+        self.recv_data_amazon(gotworld)
         self.seq_dict.pop(gotworld.acks, None)
 
 
@@ -33,7 +39,7 @@ class Amazon(Base):
         print("Handling request...")
         while True:
             request = amazon_ups_pb2.AMessage()
-            self.recv_data(request)
+            self.recv_data_amazon(request)
             self.parse_request(request)
 
     
@@ -59,7 +65,7 @@ class Amazon(Base):
             if pic.seqnum not in self.recv_msg:
                 self.recv_msg.add(pic.seqnum)
                 # Update package info and info of item within it
-                truck_id = # Some function in database.py to find a available truck
+                truck_id = find_truck()# Some function in database.py to find a available truck
                 user_name = pic.upsaccount
                 wh_id = pic.whnum
                 package_id = pic.shipid
@@ -74,7 +80,7 @@ class Amazon(Base):
                 res_to_amazon.acks.append(pic.seqnum)
                 # Send the truck to do pick up
                 self.world.generate_pickup(truck_id, wh_id)
-        self.send_data(res_to_amazon)
+        self.send_data_amazon(res_to_amazon)
 
 
     # Parse APackloaded
@@ -96,7 +102,7 @@ class Amazon(Base):
                 self.world.generate_delivery(truck_id, package_id)
                 res_to_amazon.acks.append(loa.seqnum)
                 self.generate_pack_load(package_id)
-        self.send_data(res_to_amazon)
+        self.send_data_amazon(res_to_amazon)
 
 
     # Parse acks
@@ -113,7 +119,7 @@ class Amazon(Base):
             if er.seqnum not in self.recv_msg:
                 self.recv_msg.add(er.seqnum)
                 res_to_amazon.acks.append(er.seqnum)
-        self.send_data(res_to_amazon)
+        self.send_data_amazon(res_to_amazon)
 
 
     ## Send to amazon
@@ -129,7 +135,7 @@ class Amazon(Base):
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
-        self.send_data(res_to_amazon)
+        self.send_data_amazon(res_to_amazon)
     
 
     # Populate UPackLoaded
@@ -142,7 +148,7 @@ class Amazon(Base):
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
-        self.send_data(res_to_amazon)
+        self.send_data_amazon(res_to_amazon)
 
 
     # Populate UPackDelivered
@@ -155,7 +161,7 @@ class Amazon(Base):
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
-        self.send_data(res_to_amazon)
+        self.send_data_amazon(res_to_amazon)
 
         
 

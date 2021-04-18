@@ -8,33 +8,33 @@ from google.protobuf.internal.encoder import _EncodeVarint
 
 class MySocket():
     def __init__(self, simspeed=100):
-        self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.simspeed = simspeed
         self.seq_num = 0
         self.seq_dict = dict()
         self.recv_msg = set()
-        # Resend mechanism
-        th_resend = threading.Thread(target=self.resend, args=())
-        th_resend.setDaemon(True)
-        th_resend.start()
 
         
     def setup_server(self, host, port):
-        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         print('starting up on {} port {}'.format(host, port))
-        self.socket.bind((host, port))
-        self.socket.listen(1)
+        self.sock.bind((host, port))
+        self.sock.listen()
 
+
+    def accept_connection(self):
+        self.amazon_sock, self.amazon_address = self.sock.accept()
+        print(self.amazon_address)
 
     def make_connection(self, host, port):
-        print('starting up on {} port {}'.format(host, port))
-        self.socket.connect((host, port))
+        print('connecting to {} port {}'.format(host, port))
+        self.sock.connect((host, port))
 
 
     def encode_varint(self, value):
         """ Encode an int as a protobuf varint """
         data = []
-        _VarintEncoder()(data.append, value, None)
+        _EncodeVarint()(data.append, value, None)
         return b''.join(data)
 
 
@@ -43,35 +43,59 @@ class MySocket():
         return _DecodeVarint32(data, 0)[0]
 
 
-    def recv_data(self, message):
-        data = b''
+    def recv_data_amazon(self, message):
+        var_int_buff = []
         while True:
-            try:
-                data += socket.recv(1)
-                size = decode_varint(data)
+            buf = self.amazon_sock.recv(1)
+            var_int_buff += buf
+            msg_len, new_pos = _DecodeVarint32(var_int_buff, 0)
+            if new_pos != 0:
                 break
-            except IndexError:
-                pass
-        # Receive the message data
-        data = socket.recv(size)
+        whole_message = self.amazon_sock.recv(msg_len)
         # Decode the message
-        message.ParseFromString(data)
+        message.ParseFromString(whole_message)
+        ##return size
+
+
+    def recv_data(self, message):
+        var_int_buff = []
+        while True:
+            buf = self.sock.recv(1)
+            var_int_buff += buf
+            msg_len, new_pos = _DecodeVarint32(var_int_buff, 0)
+            if new_pos != 0:
+                break
+        whole_message = self.sock.recv(msg_len)
+        # Decode the message
+        message.ParseFromString(whole_message)
         ##return size
         
 
     def send_data(self, message):
-        data=message.SerializeToString()
-        size = encode_varint(len(data))
-        socket.sendall(size+data)  
+        data = message.SerializeToString()
+        _EncodeVarint(self.sock.send, len(data), None)
+        self.sock.send(data)  
+
+
+    def send_data_amazon(self, message):
+        data = message.SerializeToString()
+        _EncodeVarint(self.sock.send, len(data), None)
+        self.sock.send(data)  
 
 
     def resend_data(self):
         while True:
-            time.sleep(1)
+            time.sleep(500)
             for k in self.seq_dict:
                 self.send_data(self.seq_dict[k])
+
+    def resend_data_amazon(self):
+        while True:
+            time.sleep(500)
+            for k in self.seq_dict:
+                self.send_data_amazon(self.seq_dict[k])
 
 
     def __del__(self):
         print("Closing connection...")
-        self.socket.close()
+        self.sock.close()

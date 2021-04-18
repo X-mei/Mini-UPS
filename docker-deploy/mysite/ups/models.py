@@ -32,10 +32,10 @@ class UserManager(BaseUserManager):
         return self.create_user(username, email, password, **other_fields)
 
 class Truck(models.Model):
-    truck_id=models.IntegerField(primary_key=True)
-    x=models.IntegerField()
-    y=models.IntegerField()
-    status=models.TextField(null=True)
+    truck_id=models.AutoField(primary_key=True)
+    x=models.IntegerField(default=1)
+    y=models.IntegerField(default=1)
+    status=models.TextField(default='idle')
 
 class User(AbstractBaseUser):
     """

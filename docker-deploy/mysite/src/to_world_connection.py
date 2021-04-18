@@ -1,21 +1,28 @@
 from .base_connect import MySocket
-import world_ups_pb2
-import amazon_ups_pb2
-from ups.models import Truck, Package
+from . import amazon_ups_pb2
+from . import world_ups_pb2
+from ups.models import Truck, Package, Product
 import threading
 
 class World(MySocket):
     
     def init(self, count):
+        # Resend mechanism
+        th_resend = threading.Thread(target=self.resend_data, args=())
+        th_resend.setDaemon(True)
+        th_resend.start()
+
         connect = world_ups_pb2.UConnect()
         connected = world_ups_pb2.UConnected()
-        ######### Need add these truck to database ########
+        # Add truck to database with default settings
         for i in range(count):
+            truck = Truck()
+            truck.save()
             newtruck = connect.trucks.add()
-            newtruck.id = i+1
-            newtruck.x = 1
-            newtruck.y = 1
-        connect.isAmazon = Flase
+            newtruck.id = truck.truck_id
+            newtruck.x = truck.x
+            newtruck.y = truck.y
+        connect.isAmazon = False
         self.send_data(connect)
         self.recv_data(connected)
         print(connected.result)

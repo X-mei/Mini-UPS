@@ -8,6 +8,13 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from .models import *
+from src.server import Server
+
+print("Initiating server...")
+try:
+    server = Server()
+except:
+    pass
 
 # Create your views here.
 def show_index(request):
@@ -16,12 +23,14 @@ def show_index(request):
     """
     return render(request, 'ups/index.html')
 
+
 def show_generic(request):
     return render(request, 'ups/generic.html')
 
 
 def show_elements(request):
     return render(request, 'ups/elements.html')
+
 
 @csrf_protect
 def user_register(request):
