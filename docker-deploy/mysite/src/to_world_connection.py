@@ -96,8 +96,8 @@ class World(MySocket):
                     self.amazon.generate_pick_recv(curr_pack.package_id, curr_pack.tracking_num, curr_pack.truck.truck_id)
                 # Do nothing if its a completion of all deliveries
                 else:
+                    pass
                     #print("Error with status.")
-
         self.send_data(res_to_world)
 
 
