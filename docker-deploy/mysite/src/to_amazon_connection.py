@@ -1,7 +1,7 @@
 from .base_connect import MySocket
 from . import amazon_ups_pb2
 from . import world_ups_pb2
-from ups.models import Truck, Package, Product
+from ups.models import Truck, Package, Product, User
 from .database import *
 import threading
 
@@ -69,12 +69,17 @@ class Amazon(MySocket):
                 user_name = pic.upsaccount
                 wh_id = pic.whnum
                 package_id = pic.shipid
-                package_db = Package(user=user_name, package_id=package_id, wh_id=wh_id, truck=truck_id)
+                
+                #usr = User.objects.add(username=user_name)
+                #usr.save()
+                truck = Truck.objects.get(truck_id=truck_id)
+                package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck)
+                package_db.save()
                 for prod in pic.products:
                     prod_id = prod.id
                     prod_desc = prod.description
                     prod_cnt = prod.count
-                    prod_db = Product(product_id=prod_id, product_description=prod_desc, product_count=prod_cnt, product_package=package_id)
+                    prod_db = Product(product_id=prod_id, product_description=prod_desc, product_count=prod_cnt, product_package=package_db)
                     prod_db.save()
                 package_db.save()
                 res_to_amazon.acks.append(pic.seqnum)
@@ -94,7 +99,8 @@ class Amazon(MySocket):
                 package_id = loa.truckid
                 dest_x = loa.x
                 dest_y = loa.y
-                packageInfo = Package.objects.get(package_id=package_id, truck=truck_id)
+                truck = Truck.objects.get(truck_id=truck_id)
+                packageInfo = Package.objects.get(package_id=package_id, truck=truck)
                 packageInfo.dest_x = dest_x
                 packageInfo.dest_y = dest_y
                 packageInfo.save()
