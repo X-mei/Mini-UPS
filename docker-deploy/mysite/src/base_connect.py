@@ -26,6 +26,7 @@ class MySocket():
         self.amazon_sock, self.amazon_address = self.sock.accept()
         print(self.amazon_address)
 
+
     def make_connection(self, host, port):
         print('connecting to {} port {}'.format(host, port))
         self.sock.connect((host, port))

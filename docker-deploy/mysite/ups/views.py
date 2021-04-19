@@ -11,12 +11,12 @@ from .models import *
 from src.server import Server
 
 print("Initiating server...")
-count = 1
-if count == 1:
-    server = Server()
-    count += 1
-else:
-    pass
+Truck.objects.all().delete()
+Package.objects.all().delete()
+Product.objects.all().delete()
+server = Server()
+
+
 
 # Create your views here.
 def show_index(request):
