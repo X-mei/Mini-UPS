@@ -19,7 +19,6 @@ def find_truck():
     cur = conn.cursor()
     cur.execute("SELECT truck_id FROM ups_truck WHERE status = 'idle' OR status = 'arrive warehouse' OR status = 'delivering';")
     result = cur.fetchone()
-    print(result)
     cur.execute("UPDATE ups_truck SET status = 'travelling' WHERE truck_id = %s;", result)
     conn.commit()
     conn.close()

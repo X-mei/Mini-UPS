@@ -53,7 +53,7 @@ class World(MySocket):
     # Generate Ucommands
     def generate_command(self):
         command = world_ups_pb2.UCommands()
-        command.simspeed = simspeed
+        command.simspeed = self.simspeed
         return command
 
 
@@ -61,11 +61,11 @@ class World(MySocket):
     def parse_responses(self, response):
         print("Received: ", response)
         # Parse each field in the message
-        parse_finished(response)
-        parse_delivered(response)
-        parse_truckInfo(response)
-        parse_error(response)
-        parse_ack(response)
+        self.parse_finished(response)
+        self.parse_delivered(response)
+        self.parse_truckInfo(response)
+        self.parse_error(response)
+        self.parse_ack(response)
         #parse_disconnected(response)
 
 
@@ -88,12 +88,15 @@ class World(MySocket):
                 res_to_world.acks.append(fin.seqnum)
                 # Send pick up received if status is "arrive warehouse"
                 curr_pack = Package.objects.get(truck=truck_id)
-                if stat == 'arrive warehouse':
+                if stat == 'ARRIVE WAREHOUSE':
                     ########### Need to generate a tracking number ############
-                    self.amazon.generate_pick_recv(curr_pack.package_id, curr_pack.tracking_num, curr_pack.truck)
+                    p_id = curr_pack.package_id
+                    curr_pack.tracking_num = str(p_id)
+                    curr_pack.save()
+                    self.amazon.generate_pick_recv(curr_pack.package_id, curr_pack.tracking_num, curr_pack.truck.truck_id)
                 # Do nothing if its a completion of all deliveries
                 else:
-                    print("Error with status.")
+                    #print("Error with status.")
 
         self.send_data(res_to_world)
 
@@ -113,7 +116,7 @@ class World(MySocket):
                 curr_package.save()
                 res_to_world.acks.append(delv.seqnum)
                 # Send package delivered message
-                self.amazon.generate_pack_delv(curr_pack.package_id)
+                self.amazon.generate_pack_delv(curr_package.package_id)
         self.send_data(res_to_world)
     
 

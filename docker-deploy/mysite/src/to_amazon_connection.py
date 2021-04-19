@@ -69,7 +69,6 @@ class Amazon(MySocket):
                 user_name = pic.upsaccount
                 wh_id = pic.whnum
                 package_id = pic.shipid
-                
                 #usr = User.objects.add(username=user_name)
                 #usr.save()
                 truck = Truck.objects.get(truck_id=truck_id)
@@ -96,11 +95,12 @@ class Amazon(MySocket):
                 self.recv_msg.add(loa.seqnum)
                 # Update the destination info of package
                 truck_id = loa.truckid
-                package_id = loa.truckid
+                package_id = loa.shipid
                 dest_x = loa.x
                 dest_y = loa.y
-                truck = Truck.objects.get(truck_id=truck_id)
-                packageInfo = Package.objects.get(package_id=package_id, truck=truck)
+                print(package_id)
+                #truck = Truck.objects.get(truck_id=truck_id)
+                packageInfo = Package.objects.get(package_id=package_id)#, truck=truck)
                 packageInfo.dest_x = dest_x
                 packageInfo.dest_y = dest_y
                 packageInfo.save()
@@ -112,7 +112,7 @@ class Amazon(MySocket):
 
 
     # Parse acks
-    def parse_ack(self, request):
+    def parse_acks(self, request):
         for a in request.acks:
             self.seq_dict.pop(a, None)
         
@@ -150,7 +150,7 @@ class Amazon(MySocket):
         
         load = res_to_amazon.resPackLoaded.add()
         load.shipid = package_id
-        pickup.seqnum = self.seq_num
+        load.seqnum = self.seq_num
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
@@ -163,7 +163,7 @@ class Amazon(MySocket):
         
         load = res_to_amazon.reqPackDelivered.add()
         load.shipid = package_id
-        pickup.seqnum = self.seq_num
+        load.seqnum = self.seq_num
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
