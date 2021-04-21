@@ -8,7 +8,7 @@ class World(MySocket):
     
     def init(self, count):
         # Resend mechanism
-        th_resend = threading.Thread(target=self.resend_data_amazon, args=())
+        th_resend = threading.Thread(target=self.resend_data, args=())
         th_resend.setDaemon(True)
         th_resend.start()
 
@@ -25,7 +25,7 @@ class World(MySocket):
         connect.isAmazon = False
         self.send_data(connect)
         self.recv_data(connected)
-        print(connected.result)
+        #self.file_handle.write(connected.result)
         self.world_id = connected.worldid
         th_handler = threading.Thread(target=self.handler, args=())
         th_handler.setDaemon(True)
@@ -42,6 +42,7 @@ class World(MySocket):
 
 
     def handler(self):
+        #self.file_handle.write()
         print("Handling response...")
         while True:
             response = world_ups_pb2.UResponses()
@@ -59,7 +60,8 @@ class World(MySocket):
 
     ## To Parse UResponses
     def parse_responses(self, response):
-        print("Received: ", response)
+        #self.file_handle.write()
+        print("Received from world: ", response)
         # Parse each field in the message
         self.parse_finished(response)
         self.parse_delivered(response)
@@ -150,7 +152,8 @@ class World(MySocket):
     def parse_error(self, response):
         res_to_world = self.generate_command()
         for er in response.error:
-            print(er.err)
+            #self.file_handle.write()
+            #print(er.err)
             if er.seqnum not in self.recv_msg:
                 self.recv_msg.add(er.seqnum)
                 res_to_world.acks.append(er.seqnum)
@@ -170,6 +173,7 @@ class World(MySocket):
         
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1
+        print("Sending to world: ", res_to_world)
         self.send_data(res_to_world)
     
 
@@ -178,7 +182,7 @@ class World(MySocket):
         res_to_world = self.generate_command()
         # Get info of given package id
         packageInfo = Package.objects.get(package_id=package_id)
-
+        
         delivery = res_to_world.deliveries.add()
         delivery.truckid = truck_id
         delivery.seqnum = self.seq_num
@@ -190,6 +194,7 @@ class World(MySocket):
 
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1
+        print("Sending to world: ", res_to_world)
         self.send_data(res_to_world)
 
 
@@ -203,6 +208,7 @@ class World(MySocket):
 
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1
+        print("Sending to world: ", res_to_world)
         self.send_data(res_to_world)
 
 

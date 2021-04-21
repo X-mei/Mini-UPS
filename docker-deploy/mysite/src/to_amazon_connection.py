@@ -20,6 +20,7 @@ class Amazon(MySocket):
         self.seq_num += 1
         self.send_data_amazon(sendworld)
         self.make_sure_world_send()
+
         th_handler = threading.Thread(target=self.handler_amazon, args=())
         th_handler.setDaemon(True)
         th_handler.start()
@@ -51,7 +52,8 @@ class Amazon(MySocket):
 
     ## Receive from amazon
     def parse_request(self, request):
-        print("Received: ", request)
+        #self.file_handle.write()
+        print("Received from amazon: ", request)
         self.parse_pickup(request)
         self.parse_loaded(request)
         self.parse_acks(request)
@@ -69,10 +71,13 @@ class Amazon(MySocket):
                 user_name = pic.upsaccount
                 wh_id = pic.whnum
                 package_id = pic.shipid
-                #usr = User.objects.add(username=user_name)
-                #usr.save()
                 truck = Truck.objects.get(truck_id=truck_id)
-                package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck)
+                try:
+                    usr = User.objects.get(username=user_name)
+                    package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, user=usr, dest_x=pic.x, dest_y=pic.y)
+                except:
+                    package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, dest_x=pic.x, dest_y=pic.y)
+                
                 package_db.save()
                 for prod in pic.products:
                     prod_id = prod.id
@@ -82,6 +87,7 @@ class Amazon(MySocket):
                     prod_db.save()
                 package_db.save()
                 res_to_amazon.acks.append(pic.seqnum)
+                print(pic.seqnum)
                 # Send the truck to do pick up
                 self.world.generate_pickup(truck_id, wh_id)
         self.send_data_amazon(res_to_amazon)
@@ -98,11 +104,12 @@ class Amazon(MySocket):
                 package_id = loa.shipid
                 dest_x = loa.x
                 dest_y = loa.y
-                print(package_id)
+                #self.file_handle.write()
                 #truck = Truck.objects.get(truck_id=truck_id)
                 packageInfo = Package.objects.get(package_id=package_id)#, truck=truck)
-                packageInfo.dest_x = dest_x
-                packageInfo.dest_y = dest_y
+                packageInfo.package_status = 'loaded'
+                #packageInfo.dest_x = dest_x
+                #packageInfo.dest_y = dest_y
                 packageInfo.save()
                 # Send the truck to do delivery
                 self.world.generate_delivery(truck_id, package_id)
@@ -121,6 +128,7 @@ class Amazon(MySocket):
     def parse_error(self, request):
         res_to_amazon = self.generate_message()
         for er in request.error:
+            #self.file_handle.write()
             print(er.err)
             if er.seqnum not in self.recv_msg:
                 self.recv_msg.add(er.seqnum)
@@ -141,6 +149,7 @@ class Amazon(MySocket):
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
+        print("Sending to amazon: ", res_to_amazon)
         self.send_data_amazon(res_to_amazon)
     
 
@@ -154,6 +163,7 @@ class Amazon(MySocket):
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
+        print("Sending to amazon: ", res_to_amazon)
         self.send_data_amazon(res_to_amazon)
 
 
@@ -167,6 +177,7 @@ class Amazon(MySocket):
         
         self.seq_dict[self.seq_num] = res_to_amazon
         self.seq_num += 1
+        print("Sending to amazon: ", res_to_amazon)
         self.send_data_amazon(res_to_amazon)
 
         
