@@ -13,7 +13,7 @@ class MySocket():
         self.seq_num = 0
         self.seq_dict = dict()
         self.recv_msg = set()
-        self.file_handle = open('logfile.txt', mode='w')
+        #self.file_handle = open('logfile.txt', mode='w')
 
         
     def setup_server(self, host, port):
@@ -31,7 +31,7 @@ class MySocket():
 
 
     def make_connection(self, host, port):
-        self.file_handle.write('connecting to {} port {}'.format(host, port))
+        #self.file_handle.write('connecting to {} port {}'.format(host, port))
         self.sock.connect((host, port))
 
 
