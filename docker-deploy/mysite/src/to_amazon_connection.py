@@ -1,3 +1,12 @@
+# from base_connect import MySocket
+# import amazon_ups_pb2
+# import world_ups_pb2
+# import sys
+# sys.path.append("..")
+# from ups.models import Truck, Package, Product, User
+# from database import *
+# import threading
+
 from .base_connect import MySocket
 from . import amazon_ups_pb2
 from . import world_ups_pb2
@@ -78,7 +87,6 @@ class Amazon(MySocket):
                     package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, user=usr, dest_x=pic.x, dest_y=pic.y)
                 except:
                     package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, dest_x=pic.x, dest_y=pic.y)
-                
                 package_db.save()
                 for prod in pic.products:
                     prod_id = prod.id
