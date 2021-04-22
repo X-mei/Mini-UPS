@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["web","127.0.0.1","localhost","vcm-19617.vm.duke.edu","vcm-18172.vm.duke.edu"]
 
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -81,6 +80,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': 'passw0rd',
         'HOST': '127.0.0.1',
+        #'HOST': 'db',
         'PORT': 5432,
     }
 }

@@ -16,6 +16,7 @@ urlpatterns = [
     #path('modify_destination_y/', views.modify_destination_y, name="modify_destination_y"),
     path('see_packages/', views.see_packages, name='see_packages'),
     path('see_products/<int:package_id>', views.see_products, name='see_products'),
+    path('send_message/', views.send_message, name='send_message'),
     path('elements/', views.show_elements, name='elements'),
 ]
 

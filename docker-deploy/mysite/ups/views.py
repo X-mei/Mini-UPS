@@ -170,3 +170,21 @@ def see_products(request, package_id):
         'products' : package.product_set.all()
     }
     return render(request, 'ups/see_products.html', context)
+
+
+@csrf_protect
+def send_message(request):
+    if not request.session.get('is_login',None):  
+        return redirect('/login')
+    if request.POST:
+        user = User.objects.filter(username = request.POST['name'])[0]
+        if not user:
+            return redirect('/index') 
+        if request.POST['email'] != user.email:
+            return redirect('/index')
+        new_message = Message.objects.create()
+        new_message.message_name = user.username
+        new_message.message_email = user.email
+        new_message.message_description = request.POST['message']
+        new_message.save()
+    return render(request, 'ups/send_message.html')

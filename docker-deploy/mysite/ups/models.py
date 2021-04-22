@@ -87,3 +87,8 @@ class Product(models.Model):
     product_description = models.TextField()
     product_count = models.IntegerField(null=True)
     product_package = models.ForeignKey(Package, on_delete=models.SET_NULL, null=True)
+
+class Message(models.Model):
+    message_description = models.TextField()
+    message_name = models.CharField(max_length=40)
+    message_email = models.CharField(max_length=400)
