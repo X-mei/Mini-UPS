@@ -1,3 +1,5 @@
+# from to_world_connection import World
+# from to_amazon_connection import Amazon
 from .to_world_connection import World
 from .to_amazon_connection import Amazon
 
@@ -21,4 +23,12 @@ class Server():
         # self.world.set_amazon(self.amazon)
         # self.amazon.set_world(self.world)
         # self.amazon.init()
+
+# if __name__=='__main__':
+#     print("Initiating server...")
+#     Truck.objects.all().delete()
+#     Package.objects.all().delete()
+#     Product.objects.all().delete()
+#     server = Server()
+
 

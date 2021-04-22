@@ -7,16 +7,18 @@ from google.protobuf.internal.encoder import _VarintBytes
 from google.protobuf.internal.encoder import _EncodeVarint
 
 class MySocket():
-    def __init__(self, simspeed=100):
+    def __init__(self, simspeed=10000):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.simspeed = simspeed
         self.seq_num = 0
         self.seq_dict = dict()
         self.recv_msg = set()
+        self.file_handle = open('logfile.txt', mode='w')
 
         
     def setup_server(self, host, port):
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        #self.file_handle.write('starting up on {} port {}'.format(host, port))
         print('starting up on {} port {}'.format(host, port))
         self.sock.bind((host, port))
         self.sock.listen()
@@ -24,11 +26,12 @@ class MySocket():
 
     def accept_connection(self):
         self.amazon_sock, self.amazon_address = self.sock.accept()
+        #self.file_handle.write('received connection from {} port {}'.format(self.amazon_address))
         print(self.amazon_address)
 
 
     def make_connection(self, host, port):
-        print('connecting to {} port {}'.format(host, port))
+        self.file_handle.write('connecting to {} port {}'.format(host, port))
         self.sock.connect((host, port))
 
 
@@ -86,17 +89,21 @@ class MySocket():
 
     def resend_data(self):
         while True:
-            time.sleep(500)
-            for k in self.seq_dict:
+            time.sleep(5)
+            for k in sorted(self.seq_dict):
+                print("Resending to world ", self.seq_dict[k])
                 self.send_data(self.seq_dict[k])
+                break
 
     def resend_data_amazon(self):
         while True:
-            time.sleep(500)
-            for k in self.seq_dict:
+            time.sleep(5)
+            for k in sorted(self.seq_dict):
+                print("Resending to amazon ", self.seq_dict[k])
                 self.send_data_amazon(self.seq_dict[k])
+                break
 
 
     def __del__(self):
-        print("Closing connection from...")
+        #self.file_handle.write("Closing connection from...")
         self.sock.close()

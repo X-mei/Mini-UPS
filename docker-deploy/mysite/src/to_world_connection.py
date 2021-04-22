@@ -1,3 +1,11 @@
+# from base_connect import MySocket
+# import amazon_ups_pb2
+# import world_ups_pb2
+# import sys
+# sys.path.append("..")
+# from ups.models import Truck, Package, Product
+# import threading
+
 from .base_connect import MySocket
 from . import amazon_ups_pb2
 from . import world_ups_pb2
@@ -8,7 +16,7 @@ class World(MySocket):
     
     def init(self, count):
         # Resend mechanism
-        th_resend = threading.Thread(target=self.resend_data_amazon, args=())
+        th_resend = threading.Thread(target=self.resend_data, args=())
         th_resend.setDaemon(True)
         th_resend.start()
 
@@ -25,7 +33,7 @@ class World(MySocket):
         connect.isAmazon = False
         self.send_data(connect)
         self.recv_data(connected)
-        print(connected.result)
+        #self.file_handle.write(connected.result)
         self.world_id = connected.worldid
         th_handler = threading.Thread(target=self.handler, args=())
         th_handler.setDaemon(True)
@@ -42,6 +50,7 @@ class World(MySocket):
 
 
     def handler(self):
+        #self.file_handle.write()
         print("Handling response...")
         while True:
             response = world_ups_pb2.UResponses()
@@ -53,13 +62,13 @@ class World(MySocket):
     # Generate Ucommands
     def generate_command(self):
         command = world_ups_pb2.UCommands()
-        command.simspeed = self.simspeed
         return command
 
 
     ## To Parse UResponses
     def parse_responses(self, response):
-        print("Received: ", response)
+        #self.file_handle.write()
+        print("Received from world: ", response)
         # Parse each field in the message
         self.parse_finished(response)
         self.parse_delivered(response)
@@ -72,6 +81,7 @@ class World(MySocket):
     # Parse UFinished
     def parse_finished(self, response):
         res_to_world = self.generate_command()
+        send = False
         for fin in response.completions:
             if fin.seqnum not in self.recv_msg:
                 self.recv_msg.add(fin.seqnum)
@@ -86,6 +96,7 @@ class World(MySocket):
                 curr_truck.status = stat
                 curr_truck.save()
                 res_to_world.acks.append(fin.seqnum)
+                send = True
                 # Send pick up received if status is "arrive warehouse"
                 curr_pack = Package.objects.get(truck=truck_id)
                 if stat == 'ARRIVE WAREHOUSE':
@@ -98,12 +109,15 @@ class World(MySocket):
                 else:
                     pass
                     #print("Error with status.")
-        self.send_data(res_to_world)
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
 
 
     # Parse UDeliveryMade
     def parse_delivered(self, response):
         res_to_world = self.generate_command()
+        send = False
         # Update status of all package
         for delv in response.delivered:
             if delv.seqnum not in self.recv_msg:
@@ -117,12 +131,16 @@ class World(MySocket):
                 res_to_world.acks.append(delv.seqnum)
                 # Send package delivered message
                 self.amazon.generate_pack_delv(curr_package.package_id)
-        self.send_data(res_to_world)
+                send = True
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
     
 
     # Parse UTruck
     def parse_truckInfo(self, response):
         res_to_world = self.generate_command()
+        send = False
         # Update status of all package
         for ti in response.truckstatus:
             if ti.seqnum not in self.recv_msg:
@@ -137,7 +155,10 @@ class World(MySocket):
                 curr_truck.status = stat
                 curr_truck.save()
                 res_to_world.acks.append(ti.seqnum)
-        self.send_data(res_to_world)
+                send = True
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
 
 
     # Parse acks
@@ -149,12 +170,18 @@ class World(MySocket):
     # Parse error
     def parse_error(self, response):
         res_to_world = self.generate_command()
+        send = False
         for er in response.error:
-            print(er.err)
+            #self.file_handle.write()
+            #print(er.err)
             if er.seqnum not in self.recv_msg:
                 self.recv_msg.add(er.seqnum)
                 res_to_world.acks.append(er.seqnum)
-        self.send_data(res_to_world)
+                send = True
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
+        
     
 
     ## To generate UCommands
@@ -170,6 +197,7 @@ class World(MySocket):
         
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1
+        print("Sending to world: ", res_to_world)
         self.send_data(res_to_world)
     
 
@@ -178,7 +206,7 @@ class World(MySocket):
         res_to_world = self.generate_command()
         # Get info of given package id
         packageInfo = Package.objects.get(package_id=package_id)
-
+        
         delivery = res_to_world.deliveries.add()
         delivery.truckid = truck_id
         delivery.seqnum = self.seq_num
@@ -190,6 +218,7 @@ class World(MySocket):
 
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1
+        print("Sending to world: ", res_to_world)
         self.send_data(res_to_world)
 
 
@@ -203,6 +232,7 @@ class World(MySocket):
 
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1
+        print("Sending to world: ", res_to_world)
         self.send_data(res_to_world)
 
 

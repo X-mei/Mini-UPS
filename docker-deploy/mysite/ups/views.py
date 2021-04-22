@@ -144,6 +144,7 @@ def see_packages(request):
 def modify_destination_x(request, package_id):
     if request.method == "POST":
         modify_destination_x_form = ModifyDestinationXForm(request.POST, instance = Package.objects.filter(id = package_id)[0])
+        
         if modify_destination_x_form.is_valid():
           modify_destination_x_form.save()
           return redirect('/see_packages')
