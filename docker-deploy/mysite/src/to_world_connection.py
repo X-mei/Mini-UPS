@@ -54,7 +54,6 @@ class World(MySocket):
     # Generate Ucommands
     def generate_command(self):
         command = world_ups_pb2.UCommands()
-        command.simspeed = self.simspeed
         return command
 
 
@@ -74,6 +73,7 @@ class World(MySocket):
     # Parse UFinished
     def parse_finished(self, response):
         res_to_world = self.generate_command()
+        send = False
         for fin in response.completions:
             if fin.seqnum not in self.recv_msg:
                 self.recv_msg.add(fin.seqnum)
@@ -88,6 +88,7 @@ class World(MySocket):
                 curr_truck.status = stat
                 curr_truck.save()
                 res_to_world.acks.append(fin.seqnum)
+                send = True
                 # Send pick up received if status is "arrive warehouse"
                 curr_pack = Package.objects.get(truck=truck_id)
                 if stat == 'ARRIVE WAREHOUSE':
@@ -100,12 +101,15 @@ class World(MySocket):
                 else:
                     pass
                     #print("Error with status.")
-        self.send_data(res_to_world)
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
 
 
     # Parse UDeliveryMade
     def parse_delivered(self, response):
         res_to_world = self.generate_command()
+        send = False
         # Update status of all package
         for delv in response.delivered:
             if delv.seqnum not in self.recv_msg:
@@ -119,12 +123,16 @@ class World(MySocket):
                 res_to_world.acks.append(delv.seqnum)
                 # Send package delivered message
                 self.amazon.generate_pack_delv(curr_package.package_id)
-        self.send_data(res_to_world)
+                send = True
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
     
 
     # Parse UTruck
     def parse_truckInfo(self, response):
         res_to_world = self.generate_command()
+        send = False
         # Update status of all package
         for ti in response.truckstatus:
             if ti.seqnum not in self.recv_msg:
@@ -139,7 +147,10 @@ class World(MySocket):
                 curr_truck.status = stat
                 curr_truck.save()
                 res_to_world.acks.append(ti.seqnum)
-        self.send_data(res_to_world)
+                send = True
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
 
 
     # Parse acks
@@ -151,13 +162,18 @@ class World(MySocket):
     # Parse error
     def parse_error(self, response):
         res_to_world = self.generate_command()
+        send = False
         for er in response.error:
             #self.file_handle.write()
             #print(er.err)
             if er.seqnum not in self.recv_msg:
                 self.recv_msg.add(er.seqnum)
                 res_to_world.acks.append(er.seqnum)
-        self.send_data(res_to_world)
+                send = True
+        if send:
+            print("Sending to world: ", res_to_world)
+            self.send_data(res_to_world)
+        
     
 
     ## To generate UCommands
