@@ -3,10 +3,10 @@ version: '2'
 services:
   db:
       image: postgres
-      # environment:
-      #   - POSTGRES_DB=postgres
-      #   - POSTGRES_USER=postgres
-      #   - POSTGRES_PASSWORD=passw0rd
+      environment:
+        - POSTGRES_DB=postgres
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
       volumes:
         - data-volume:/var/lib/postgresql/data
       expose:
@@ -29,15 +29,15 @@ services:
       depends_on:
         - web-init
 
-#   server:
-#       build: ./mysite
-#       command: python3 /code/src/server.py
-#       volumes:
-#         - ./mysite:/code
-#       depends_on:
-#         - web
-#       ports:
-#       - "8888:8888"
+  # server:
+  #     build: ./mysite
+  #     command: python3 /code/src/main.py
+  #     volumes:
+  #       - ./mysite:/code
+  #     depends_on:
+  #       - web
+  #     ports:
+  #     - "33333:33333"
   nginx:
      image: nginx:latest
      ports:

@@ -81,7 +81,8 @@ class Amazon(MySocket):
                 user_name = pic.upsaccount
                 wh_id = pic.whnum
                 package_id = pic.shipid
-                truck = Truck.objects.get(truck_id=truck_id)                
+                truck = Truck.objects.get(truck_id=truck_id)
+                
                 try:
                     usr = User.objects.get(username=user_name)
                     package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, user=usr, dest_x=pic.x, dest_y=pic.y)
