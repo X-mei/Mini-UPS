@@ -8,7 +8,7 @@ import smtplib
 def db_connect():
     try:
         conn = psycopg2.connect(database='postgres', user='postgres', password="passw0rd", host='127.0.0.1', port='5432')
-        print("Connected to database successfully.")
+        # print("Connected to database successfully.")
         return conn
     except:
         print("Failed to connect to database ")
@@ -25,12 +25,40 @@ def find_truck():
     return result[0]
 
 #create trucks 
-def create_truck(truck_list):
-    conn=d_connect()
+def create_truck():
+    conn=db_connect()
     cur = conn.cursor()
-    for truck in truck_list:
-        cur.execute("INSERT INTO ups_truck (truck_id,x,y,status) VALUES (%s,%s,%s,%s);", (truck.id,truck.x,truck.y,"idle"))
-        conn.commit()
+    cur.execute("INSERT INTO ups_truck (x, y, status) VALUES (1, 1, 'idle') returning truck_id;")
+    result = cur.fetchone()
+    conn.commit()
+    conn.close()
+    return result[0]
+
+#update truck status
+def update_truck(cur_x, cur_y, cur_status, truck_id):
+    conn=db_connect()
+    cur = conn.cursor()
+    cur.execute("UPDATE ups_truck SET x = %s, y = %s, status = %s WHERE truck_id = %s;", (cur_x, cur_y, cur_status, truck_id, ))
+    conn.commit()
+    conn.close()
+
+
+def get_package(truck_id):
+    conn=db_connect()
+    cur = conn.cursor()
+    cur.execute("SELECT package_id FROM ups_package WHERE truck_id = %s;", (truck_id,))
+    result = cur.fetchone()
+    conn.commit()
+    conn.close()
+    return result[0]
+
+
+#add tracking number to package
+def add_trackingNum(package_id, tracking_num):
+    conn=db_connect()
+    cur = conn.cursor()
+    cur.execute("UPDATE ups_package SET tracking_num = %s WHERE package_id = %s;", (tracking_num, package_id, ))
+    conn.commit()
     conn.close()
 
 #create a package
