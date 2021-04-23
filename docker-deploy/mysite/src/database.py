@@ -38,11 +38,11 @@ def create_truck():
 def update_truck(cur_x, cur_y, cur_status, truck_id):
     conn=db_connect()
     cur = conn.cursor()
-    cur.execute("UPDATE ups_truck SET x = %s, y = %s, status = %s WHERE truck_id = %s;", (cur_x, cur_y, cur_status, truck_id, ))
+    cur.execute("UPDATE ups_truck SET x = %s, y = %s, status = %s WHERE truck_id = %s;", (cur_x, cur_y, cur_status, truck_id,))
     conn.commit()
     conn.close()
 
-
+#get package in truck
 def get_package(truck_id):
     conn=db_connect()
     cur = conn.cursor()
@@ -57,7 +57,7 @@ def get_package(truck_id):
 def add_trackingNum(package_id, tracking_num):
     conn=db_connect()
     cur = conn.cursor()
-    cur.execute("UPDATE ups_package SET tracking_num = %s WHERE package_id = %s;", (tracking_num, package_id, ))
+    cur.execute("UPDATE ups_package SET tracking_num = %s WHERE package_id = %s;", (tracking_num, package_id,))
     conn.commit()
     conn.close()
 
@@ -74,7 +74,7 @@ def create_package(packageInfo, truck_id):
 def get_status(truck_id):
     conn = db.connect()
     cur = conn.cursor()
-    cur.execute("SELECT status FROM ups_truck WHERE truck_id = %s", truck_id)
+    cur.execute("SELECT status FROM ups_truck WHERE truck_id = %s", (truck_id, ))
     result = cur.fetchone()
     cur.commit()
     cur.close()
@@ -84,11 +84,32 @@ def get_status(truck_id):
 def get_package_status(package_id):
     conn = db.connect()
     cur = conn.cursor()
-    cur.execute("SELECT package_status FROM ups_package WHERE package_id = %s", package_id)
+    cur.execute("SELECT package_status FROM ups_package WHERE package_id = %s", (package_id,))
     result = cur.fetchone()
     cur.commit()
     cur.close()
     return result[0]
+
+#update package status
+def update_packageStat(package_id, status):
+    conn=db_connect()
+    cur = conn.cursor()
+    cur.execute("UPDATE ups_package SET package_status = %s WHERE package_id = %s;", (status, package_id,))
+    conn.commit()
+    conn.close()
+
+
+#get package destination
+def get_packageDest(package_id):
+    conn=db_connect()
+    cur = conn.cursor()
+    cur.execute("SELECT dest_x, dest_y FROM ups_package WHERE package_id = %s;", (package_id,))
+    result = cur.fetchone()
+    conn.commit()
+    conn.close()
+    return result[0], result[1]
+
+
 
 
 def truck_from_idle_to_travelling(truck_id):
