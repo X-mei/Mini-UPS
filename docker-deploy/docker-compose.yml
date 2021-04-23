@@ -29,15 +29,15 @@ services:
       depends_on:
         - web-init
 
-  # server:
-  #     build: ./mysite
-  #     command: python3 /code/src/main.py
-  #     volumes:
-  #       - ./mysite:/code
-  #     depends_on:
-  #       - web
-  #     ports:
-  #     - "33333:33333"
+  server:
+      build: ./mysite
+      command: python3 /code/src/server.py
+      volumes:
+        - ./mysite:/code
+      depends_on:
+        - web
+      ports:
+      - "33334:33334"
   nginx:
      image: nginx:latest
      ports:
@@ -48,3 +48,44 @@ services:
        - web
 volumes:
    data-volume: 
+
+# version: '2'
+
+# services:
+#   db:
+#       image: postgres
+#       environment:
+#         - POSTGRES_DB=postgres
+#         - POSTGRES_USER=postgres
+#         - POSTGRES_PASSWORD=postgres
+#       volumes:
+#             - data-volume:/var/lib/postgresql/data
+#   web:
+#     build: ./mysite
+#     user: nobody
+#     command: /code/runserver.sh
+#     volumes:
+#       - ./mysite:/code
+#     expose:
+#       - "8000"
+#       - "33334"
+#       - "12345"
+#       - "23456"
+#     ports:
+#       - "33334:33334"
+#       - "12345:12345"
+#       - "23456:23456"
+#     depends_on:
+#       - db
+#   nginx:
+#     image: nginx:latest
+#     ports:
+#       - "8000:8000"
+#     volumes:
+#       - ./nginx/config:/etc/nginx/conf.d
+#     depends_on:
+#       - web
+   
+# volumes:
+#    data-volume:
+

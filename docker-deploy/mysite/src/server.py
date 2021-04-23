@@ -5,9 +5,10 @@ from to_world_connection import World
 from to_amazon_connection import Amazon
 from database import Database
 import threading
+import google
 
-world_host = 'vcm-18172.vm.duke.edu'
-#world_host = 'vcm-19617.vm.duke.edu'
+#world_host = 'vcm-18172.vm.duke.edu'
+world_host = 'vcm-19617.vm.duke.edu'
 world_port = 12345
 
 #amazon_host = 'vcm-18235.vm.duke.edu'

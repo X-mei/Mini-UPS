@@ -2,6 +2,7 @@ import socket
 import io
 import time
 import threading
+import google
 from google.protobuf.internal.decoder import _DecodeVarint32
 from google.protobuf.internal.encoder import _VarintBytes
 from google.protobuf.internal.encoder import _EncodeVarint
