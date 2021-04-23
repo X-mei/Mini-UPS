@@ -66,7 +66,7 @@ class Package(models.Model):
     ("delivering", "delivering"),
     ("delivered", "delivered")
     ]
-    package_id = models.IntegerField()
+    package_id = models.IntegerField(primary_key=True)
     tracking_num = models.CharField(max_length = 30, null=True)
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name = "package_set")
     package_status = models.CharField(max_length = 30, choices = PACKAGE_STATUS, default = 'packing')
