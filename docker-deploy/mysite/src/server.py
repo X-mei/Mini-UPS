@@ -7,7 +7,8 @@ from .database import *
 import threading
 
 world_host = 'vcm-18172.vm.duke.edu'
-#world_host = 'vcm-19617.vm.duke.edu'
+ups_host = 'vcm-19617.vm.duke.edu'
+#ups_host = '127.0.0.1'
 world_port = 12345
 
 #amazon_host = 'vcm-18235.vm.duke.edu'
@@ -21,7 +22,7 @@ class Server():
         self.world.make_connection(world_host, world_port)
         # self.world.init(5, self.database)
         self.world.init(5)
-        self.amazon.setup_server(world_host, amazon_port)
+        self.amazon.setup_server(ups_host, amazon_port)
         self.amazon.accept_connection()
         self.world.set_amazon(self.amazon)
         self.amazon.set_world(self.world)

@@ -20,7 +20,7 @@
 				<nav>
 					<ul>
 						<li><a href="/index">Home</a></li>
-						<li><a href="/show_track_result" class="active">Track Result</a></li>
+						<li><a href="/see_messages" class="active">See Messages</a></li>
 						<li><a href="/elements">Elements</a></li>
 					</ul>
 				</nav>
@@ -32,39 +32,29 @@
 				<!-- Main -->
 					<section id="main" class="wrapper">
 						<div class="inner">
-							<h1 class="major">Track Result</h1>
+							<h1 class="major">See Products Inside Package</h1>
 							<!-- <span class="image fit"><img src="/static/ups/images/pic04.jpg" alt="" /></span>
 							<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fergiat. Pellentesque in mi eu massa lacinia malesuada et a elit. Donec urna ex, lacinia in purus ac, pretium pulvinar mauris. Curabitur sapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique.</p>
 							<p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fersapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique lorem ipsum dolor.</p> -->
+                            {%for message in messages%} 
                             <article class="media content-section">
-                                <div class="media-body" style = "border: 2px solid goldenrod;">
-                                  <table>
-                                      <tbody>
-                                        <tr>
-                                            <td>Package ID</td>
-                                            <td>{{ package.package_id }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Package status</td>
-                                            <td>{{ package.package_status }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Destination X</td>
-                                            <td>{{ package.dest_x }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Destination Y</td>
-                                            <td>{{ package.dest_y }}</td>
-                                        </tr>
-                                      </tbody>
-                                  </table>
+                                <div class="table-wrapper">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Description</th>
+                                                <th>message.message_description</th>
+                                            </tr>
+                                        </thead>
+                                    </table>
                                 </div>
-                              </article>
-                        </div>
-                        <div style="text-align: center;">
-							<a href="/index" class="button">Back</a>
+                              </article> 
+                              {%endfor%}  
                         </div>
 					</section>
+                    <div style="text-align: center; text-decoration: none;">
+                        <a href="/index" class="button">Back</a>
+                    </div>
 			</div>
 
 		<!-- Footer -->

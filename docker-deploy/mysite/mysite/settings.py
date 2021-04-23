@@ -25,7 +25,7 @@ SECRET_KEY = '9!i_3s+k3j$ngwo=p_r&nld_it4j6@m3g)q!ia6m7!ad2_s=i!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["web","127.0.0.1","localhost","vcm-19617.vm.duke.edu","vcm-18172.vm.duke.edu"]
+ALLOWED_HOSTS = ["web","127.0.0.1","localhost","vcm-19617.vm.duke.edu","vcm-18172.vm.duke.edu", "vcm-18235.vm.duke.edu"]
 
 # Application definition
 
@@ -123,3 +123,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'qiutongwang88@gmail.com'
+EMAIL_HOST_PASSWORD = 'Kb980808.'
+EMAIL_PORT = 587

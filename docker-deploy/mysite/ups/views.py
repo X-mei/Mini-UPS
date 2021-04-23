@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from .models import *
-# from src.server import Server
+from src.server import Server
+from django.core.mail import send_mail
 
 # print("Initiating server...")
 # Truck.objects.all().delete()
@@ -178,9 +179,10 @@ def send_message(request):
     if not request.session.get('is_login',None):  
         return redirect('/login')
     if request.POST:
-        user = User.objects.filter(username = request.POST['name'])[0]
-        if not user:
+        #user = User.objects.get(username = request.POST['name'])
+        if request.POST['name'] != request.session.get('user_name', None):
             return redirect('/index') 
+        user = User.objects.get(username = request.POST['name'])
         if request.POST['email'] != user.email:
             return redirect('/index')
         new_message = Message.objects.create()
@@ -188,4 +190,20 @@ def send_message(request):
         new_message.message_email = user.email
         new_message.message_description = request.POST['message']
         new_message.save()
+        email_list = []
+        email_list.append(user.email)
+        send_mail('UPS', 'Thank you for your feedback.', None, email_list, fail_silently=False)
     return render(request, 'ups/send_message.html')
+
+
+# @csrf_protect
+# def see_messages(request):
+#     #Users can access this function only after they log in.
+#     if not request.session.get('is_login',None):  
+#         return redirect('/login')
+#     else:
+#         request_user = User.objects.get(username=request.session.get('user_name', None))
+#         context = {
+#             'messages' : Message.objects.filter(message_name = request_user.username)
+#         }
+#         return render(request, 'ups/see_messages.html', context)
