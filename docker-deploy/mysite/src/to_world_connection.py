@@ -1,19 +1,19 @@
-from base_connect import MySocket
-from database import *
-import amazon_ups_pb2
-import world_ups_pb2
-import threading
-
-# from .base_connect import MySocket
-# from . import amazon_ups_pb2
-# from . import world_ups_pb2
-# from ups.models import Truck, Package, Product
-# from .database import Database
+# from base_connect import MySocket
+# from database import *
+# import amazon_ups_pb2
+# import world_ups_pb2
 # import threading
 
+from .base_connect import MySocket
+from . import amazon_ups_pb2
+from . import world_ups_pb2
+from ups.models import Truck, Package, Product
+from .database import *
+import threading
+
 class World(MySocket):
-    
-    def init(self, count, database):
+    #def init(self, count, database):
+    def init(self, count):
         # Resend mechanism
         th_resend = threading.Thread(target=self.resend_data, args=())
         th_resend.setDaemon(True)
@@ -21,20 +21,21 @@ class World(MySocket):
 
         connect = world_ups_pb2.UConnect()
         connected = world_ups_pb2.UConnected()
-        self.database = database
+        # self.database = database
         # Add truck to database with default settings
         for i in range(count):
-            truck_id = self.database.create_truck()
-            newtruck = connect.trucks.add()
-            newtruck.id = truck_id
-            newtruck.x = 1
-            newtruck.y = 1
-            # truck = Truck()
-            # truck.save()
+
+            # truck_id = self.database.create_truck()
             # newtruck = connect.trucks.add()
-            # newtruck.id = truck.truck_id
-            # newtruck.x = truck.x
-            # newtruck.y = truck.y
+            # newtruck.id = truck_id
+            # newtruck.x = 1
+            # newtruck.y = 1
+            truck = Truck()
+            truck.save()
+            newtruck = connect.trucks.add()
+            newtruck.id = truck.truck_id
+            newtruck.x = truck.x
+            newtruck.y = truck.y
         connect.isAmazon = False
         self.send_data(connect)
         self.recv_data(connected)
@@ -96,27 +97,27 @@ class World(MySocket):
                 coor_y = fin.y
                 stat = fin.status
 
-                self.database.update_truck(coor_x, coor_y, stat, truck_id)
-                # curr_truck = Truck.objects.get(truck_id=truck_id)
-                # curr_truck.x = coor_x
-                # curr_truck.y = coor_y
-                # curr_truck.status = stat
-                # curr_truck.save()
+                # self.database.update_truck(coor_x, coor_y, stat, truck_id)
+                curr_truck = Truck.objects.get(truck_id=truck_id)
+                curr_truck.x = coor_x
+                curr_truck.y = coor_y
+                curr_truck.status = stat
+                curr_truck.save()
                 res_to_world.acks.append(fin.seqnum)
                 send = True
                 # Send pick up received if status is "arrive warehouse"
 
-                package_id = self.database.get_package(truck_id)
-                # curr_pack = Package.objects.get(truck=truck_id)
+                # package_id = self.database.get_package(truck_id)
+                curr_pack = Package.objects.get(truck=truck_id)
                 if stat == 'ARRIVE WAREHOUSE':
 
-                    tracking_num = str(package_id)
-                    self.database.add_trackingNum(package_id, tracking_num)
-                    self.amazon.generate_pick_recv(package_id, tracking_num, truck_id)
-                    # p_id = curr_pack.package_id
-                    # curr_pack.tracking_num = str(p_id)
-                    # curr_pack.save()
-                    # self.amazon.generate_pick_recv(curr_pack.package_id, curr_pack.tracking_num, curr_pack.truck.truck_id)
+                    # tracking_num = str(package_id)
+                    # self.database.add_trackingNum(package_id, tracking_num)
+                    # self.amazon.generate_pick_recv(package_id, tracking_num, truck_id)
+                    p_id = curr_pack.package_id
+                    curr_pack.tracking_num = str(p_id)
+                    curr_pack.save()
+                    self.amazon.generate_pick_recv(curr_pack.package_id, curr_pack.tracking_num, curr_pack.truck.truck_id)
                 # Do nothing if its a completion of all deliveries
                 else:
                     pass
@@ -138,15 +139,15 @@ class World(MySocket):
                 package_id = delv.packageid
                 stat = 'delivered'
 
-                self.database.update_packageStat(package_id, stat)
-                # curr_package = Package.objects.get(truck_id=truck_id, package_id=package_id)
-                # curr_package.package_status = stat
-                # curr_package.save()
+                # self.database.update_packageStat(package_id, stat)
+                curr_package = Package.objects.get(truck_id=truck_id, package_id=package_id)
+                curr_package.package_status = stat
+                curr_package.save()
                 res_to_world.acks.append(delv.seqnum)
                 # Send package delivered message
 
-                self.amazon.generate_pack_delv(package_id)
-                # self.amazon.generate_pack_delv(curr_package.package_id)
+                # self.amazon.generate_pack_delv(package_id)
+                self.amazon.generate_pack_delv(curr_package.package_id)
                 send = True
         if send:
             print("Sending to world: ", res_to_world)
@@ -166,12 +167,12 @@ class World(MySocket):
                 coor_y = ti.y
                 stat = ti.status
 
-                self.database.update_truck(coor_x, coor_y, stat, truck_id)
-                # curr_truck = Truck.objects.get(truck_id=truck_id)
-                # curr_truck.x = coor_x
-                # curr_truck.y = coor_y
-                # curr_truck.status = stat
-                # curr_truck.save()
+                # self.database.update_truck(coor_x, coor_y, stat, truck_id)
+                curr_truck = Truck.objects.get(truck_id=truck_id)
+                curr_truck.x = coor_x
+                curr_truck.y = coor_y
+                curr_truck.status = stat
+                curr_truck.save()
                 res_to_world.acks.append(ti.seqnum)
                 send = True
         if send:
@@ -224,8 +225,8 @@ class World(MySocket):
         res_to_world = self.generate_command()
         # Get info of given package id
 
-        dest_x, dest_y = self.database.get_packageDest(package_id)
-        # packageInfo = Package.objects.get(package_id=package_id)
+        # dest_x, dest_y = self.database.get_packageDest(package_id)
+        packageInfo = Package.objects.get(package_id=package_id)
         
         delivery = res_to_world.deliveries.add()
         delivery.truckid = truck_id
@@ -234,10 +235,10 @@ class World(MySocket):
         package = delivery.packages.add()
         package.packageid = package_id
         
-        package.x = dest_x
-        package.y = dest_y
-        # package.x = packageInfo.dest_x
-        # package.y = packageInfo.dest_y
+        # package.x = dest_x
+        # package.y = dest_y
+        package.x = packageInfo.dest_x
+        package.y = packageInfo.dest_y
 
         self.seq_dict[self.seq_num] = res_to_world
         self.seq_num += 1

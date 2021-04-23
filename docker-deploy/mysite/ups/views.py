@@ -8,13 +8,13 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from django.urls import reverse
 from .models import *
-# from src.server import Server
+from src.server import Server
 
-# print("Initiating server...")
-# Truck.objects.all().delete()
-# Package.objects.all().delete()
-# Product.objects.all().delete()
-# server = Server()
+print("Initiating server...")
+Truck.objects.all().delete()
+Package.objects.all().delete()
+Product.objects.all().delete()
+server = Server()
 
 
 
