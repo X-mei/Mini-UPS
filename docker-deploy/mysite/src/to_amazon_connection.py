@@ -1,19 +1,16 @@
-# from base_connect import MySocket
-# from database import *
-# import amazon_ups_pb2
-# import world_ups_pb2
-# import sys
-# sys.path.append("..")
-# from ups.models import Truck, Package, Product, User
-# from database import *
-# import threading
-
-from .base_connect import MySocket
-from . import amazon_ups_pb2
-from . import world_ups_pb2
-from ups.models import Truck, Package, Product, User
-from .database import Database
+from base_connect import MySocket
+from database import *
+import amazon_ups_pb2
+import world_ups_pb2
+from database import *
 import threading
+
+# from .base_connect import MySocket
+# from . import amazon_ups_pb2
+# from . import world_ups_pb2
+# from ups.models import Truck, Package, Product, User
+# from .database import Database
+# import threading
 
 class Amazon(MySocket):
 

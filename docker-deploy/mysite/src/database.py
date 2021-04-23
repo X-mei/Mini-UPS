@@ -3,8 +3,10 @@ import sys
 import threading
 import time
 import smtplib
-from . import amazon_ups_pb2
-from . import world_ups_pb2
+import amazon_ups_pb2
+import world_ups_pb2
+# from . import amazon_ups_pb2
+# from . import world_ups_pb2
 
 class Database():
     #connect with the database

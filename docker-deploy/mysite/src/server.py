@@ -1,8 +1,9 @@
-# from to_world_connection import World
-# from to_amazon_connection import Amazon
-from .to_world_connection import World
-from .to_amazon_connection import Amazon
-from .database import Database
+# from .to_world_connection import World
+# from .to_amazon_connection import Amazon
+# from .database import Database
+from to_world_connection import World
+from to_amazon_connection import Amazon
+from database import Database
 import threading
 
 world_host = 'vcm-18172.vm.duke.edu'
@@ -25,11 +26,8 @@ class Server():
         self.amazon.set_world(self.world)
         self.amazon.init(self.database)
 
-# if __name__=='__main__':
-#     print("Initiating server...")
-#     Truck.objects.all().delete()
-#     Package.objects.all().delete()
-#     Product.objects.all().delete()
-#     server = Server()
+if __name__=='__main__':
+    print("Initiating server...")
+    server = Server()
 
 
