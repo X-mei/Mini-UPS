@@ -1,27 +1,26 @@
-# from base_connect import MySocket
-# import amazon_ups_pb2
-# import world_ups_pb2
-# import sys
-# sys.path.append("..")
-# from ups.models import Truck, Package, Product, User
-# from database import *
-# import threading
-
-from .base_connect import MySocket
-from . import amazon_ups_pb2
-from . import world_ups_pb2
-from ups.models import Truck, Package, Product, User
-from .database import *
+from base_connect import MySocket
+from database import *
+import amazon_ups_pb2
+import world_ups_pb2
+from database import *
 import threading
+
+# from .base_connect import MySocket
+# from . import amazon_ups_pb2
+# from . import world_ups_pb2
+# from ups.models import Truck, Package, Product, User
+# from .database import Database
+# import threading
 
 class Amazon(MySocket):
 
-    def init(self):
+    def init(self, database):
         # Resend mechanism
         th_resend = threading.Thread(target=self.resend_data_amazon, args=())
         th_resend.setDaemon(True)
         th_resend.start()
 
+        self.database = database
         sendworld = amazon_ups_pb2.USendWorldId()
         sendworld = self.world.generate_world(sendworld)
         sendworld.seqnum = self.seq_num
@@ -43,6 +42,10 @@ class Amazon(MySocket):
 
     def set_world(self, world):
         self.world = world
+
+
+    def set_database(self, database):
+        self.database = database
 
 
     def handler_amazon(self):
@@ -77,25 +80,33 @@ class Amazon(MySocket):
             if pic.seqnum not in self.recv_msg:
                 self.recv_msg.add(pic.seqnum)
                 # Update package info and info of item within it
-                truck_id = find_truck()# Some function in database.py to find a available truck
+                truck_id = self.database.find_truck()
                 user_name = pic.upsaccount
                 wh_id = pic.whnum
                 package_id = pic.shipid
-                truck = Truck.objects.get(truck_id=truck_id)
-                
+
+                #truck = Truck.objects.get(truck_id=truck_id)
                 try:
-                    usr = User.objects.get(username=user_name)
-                    package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, user=usr, dest_x=pic.x, dest_y=pic.y)
+
+                    user_id = self.database.get_userId(user_name)
+                    self.database.create_package(package_id, wh_id, truck_id, user_id, pic.x, pic.y, pic.products)
+                    # usr = User.objects.get(username=user_name)
+                    # package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, user=usr, dest_x=pic.x, dest_y=pic.y)
                 except:
-                    package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, dest_x=pic.x, dest_y=pic.y)
-                package_db.save()
-                for prod in pic.products:
-                    prod_id = prod.id
-                    prod_desc = prod.description
-                    prod_cnt = prod.count
-                    prod_db = Product(product_id=prod_id, product_description=prod_desc, product_count=prod_cnt, product_package=package_db)
-                    prod_db.save()
-                package_db.save()
+
+                    user_id = -1
+                    self.database.create_package(package_id, wh_id, truck_id, user_id, pic.x, pic.y, pic.products)
+                    # package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, dest_x=pic.x, dest_y=pic.y)
+
+                # package_db.save()
+                # for prod in pic.products:
+                #     prod_id = prod.id
+                #     prod_desc = prod.description
+                #     prod_cnt = prod.count
+                #     prod_db = Product(product_id=prod_id, product_description=prod_desc, product_count=prod_cnt, product_package=package_db)
+                #     prod_db.save()
+
+                #package_db.save()
                 res_to_amazon.acks.append(pic.seqnum)
                 send = True
                 # Send the truck to do pick up
@@ -118,13 +129,12 @@ class Amazon(MySocket):
                 package_id = loa.shipid
                 dest_x = loa.x
                 dest_y = loa.y
-                #self.file_handle.write()
-                #truck = Truck.objects.get(truck_id=truck_id)
-                packageInfo = Package.objects.get(package_id=package_id)#, truck=truck)
-                packageInfo.package_status = 'loaded'
-                #packageInfo.dest_x = dest_x
-                #packageInfo.dest_y = dest_y
-                packageInfo.save()
+
+                status = 'loaded'
+                self.database.update_packageStat(package_id, status)
+                # packageInfo = Package.objects.get(package_id=package_id)
+                # packageInfo.package_status = 'loaded'
+                # packageInfo.save()
                 # Send the truck to do delivery
                 self.world.generate_delivery(truck_id, package_id)
                 res_to_amazon.acks.append(loa.seqnum)
