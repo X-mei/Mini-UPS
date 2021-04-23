@@ -18,11 +18,11 @@ class Server():
         self.amazon = Amazon()
         self.world.make_connection(world_host, world_port)
         self.world.init(5)
-        # self.amazon.setup_server(world_host, amazon_port)
-        # self.amazon.accept_connection()
-        # self.world.set_amazon(self.amazon)
-        # self.amazon.set_world(self.world)
-        # self.amazon.init()
+        self.amazon.setup_server(world_host, amazon_port)
+        self.amazon.accept_connection()
+        self.world.set_amazon(self.amazon)
+        self.amazon.set_world(self.world)
+        self.amazon.init()
 
 # if __name__=='__main__':
 #     print("Initiating server...")

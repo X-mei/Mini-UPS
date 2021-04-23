@@ -7,7 +7,7 @@ import smtplib
 #connect with the database
 def db_connect():
     try:
-        conn = psycopg2.connect(database='postgres', user='postgres', password="passw0rd", host='db', port='5432')
+        conn = psycopg2.connect(database='postgres', user='postgres', password="passw0rd", host='127.0.0.1', port='5432')
         print("Connected to database successfully.")
         return conn
     except:
@@ -29,7 +29,7 @@ def create_truck(truck_list):
     conn=d_connect()
     cur = conn.cursor()
     for truck in truck_list:
-        cur.execute("INSERT INTO service_truck (truck_id,x,y,status) VALUES (%s,%s,%s,%s);", (truck.id,truck.x,truck.y,"idle"))
+        cur.execute("INSERT INTO ups_truck (truck_id,x,y,status) VALUES (%s,%s,%s,%s);", (truck.id,truck.x,truck.y,"idle"))
         conn.commit()
     conn.close()
 
