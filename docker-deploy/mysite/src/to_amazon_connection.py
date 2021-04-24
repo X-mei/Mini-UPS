@@ -27,12 +27,10 @@ class Amazon():
         self.seq_num = 0
         self.seq_dict = dict()
         self.recv_msg = set()
-        #self.file_handle = open('logfile.txt', mode='w')
 
         
     def setup_server(self, host, port):
         self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        #self.file_handle.write('starting up on {} port {}'.format(host, port))
         print('starting up on {} port {}'.format(host, port))
         self.sock.bind((host, port))
         self.sock.listen()
@@ -40,12 +38,10 @@ class Amazon():
 
     def accept_connection(self):
         self.amazon_sock, self.amazon_address = self.sock.accept()
-        #self.file_handle.write('received connection from {} port {}'.format(self.amazon_address))
         print(self.amazon_address)
 
 
     def make_connection(self, host, port):
-        #self.file_handle.write('connecting to {} port {}'.format(host, port))
         self.sock.connect((host, port))
 
 
@@ -119,17 +115,16 @@ class Amazon():
 
 
     def __del__(self):
-        #self.file_handle.write("Closing connection from...")
         self.sock.close()
 
 
-    def init(self, database):
+    def init(self):
         # Resend mechanism
         th_resend = threading.Thread(target=self.resend_data_amazon, args=())
         th_resend.setDaemon(True)
         th_resend.start()
 
-        self.database = database
+        #self.database = database
         sendworld = amazon_ups_pb2.USendWorldId()
         sendworld = self.world.generate_world(sendworld)
         sendworld.seqnum = self.seq_num
@@ -157,6 +152,7 @@ class Amazon():
         self.database = database
 
 
+
     def handler_amazon(self):
         print("Handling request...")
         while True:
@@ -173,7 +169,6 @@ class Amazon():
 
     ## Receive from amazon
     def parse_request(self, request):
-        #self.file_handle.write()
         print("Received from amazon: ", request)
         self.parse_pickup(request)
         self.parse_loaded(request)
@@ -189,7 +184,7 @@ class Amazon():
             if pic.seqnum not in self.recv_msg:
                 self.recv_msg.add(pic.seqnum)
                 # Update package info and info of item within it
-                truck_id = self.database.find_truck()
+                truck_id = find_truck()
                 user_name = pic.upsaccount
                 wh_id = pic.whnum
                 package_id = pic.shipid
@@ -197,14 +192,14 @@ class Amazon():
                 #truck = Truck.objects.get(truck_id=truck_id)
                 try:
 
-                    user_id = self.database.get_userId(user_name)
-                    self.database.create_package(package_id, wh_id, truck_id, user_id, pic.x, pic.y, pic.products)
+                    user_id = get_userId(user_name)
+                    create_package(package_id, wh_id, truck_id, user_id, pic.x, pic.y, pic.products)
                     # usr = User.objects.get(username=user_name)
                     # package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, user=usr, dest_x=pic.x, dest_y=pic.y)
                 except:
 
                     user_id = -1
-                    self.database.create_package(package_id, wh_id, truck_id, user_id, pic.x, pic.y, pic.products)
+                    create_package(package_id, wh_id, truck_id, user_id, pic.x, pic.y, pic.products)
                     # package_db = Package(package_id=package_id, wh_id=wh_id, truck=truck, dest_x=pic.x, dest_y=pic.y)
 
                 # package_db.save()
@@ -240,7 +235,7 @@ class Amazon():
                 dest_y = loa.y
 
                 status = 'loaded'
-                self.database.update_packageStat(package_id, status)
+                update_packageStat(package_id, status)
                 # packageInfo = Package.objects.get(package_id=package_id)
                 # packageInfo.package_status = 'loaded'
                 # packageInfo.save()
