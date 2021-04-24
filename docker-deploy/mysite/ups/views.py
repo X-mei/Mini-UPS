@@ -144,7 +144,7 @@ def see_packages(request):
 @csrf_protect
 def modify_destination_x(request, package_id):
     if request.method == "POST":
-        modify_destination_x_form = ModifyDestinationXForm(request.POST, instance = Package.objects.filter(id = package_id)[0])
+        modify_destination_x_form = ModifyDestinationXForm(request.POST, instance = Package.objects.filter(package_id = package_id)[0])
         
         if modify_destination_x_form.is_valid():
           modify_destination_x_form.save()
@@ -156,7 +156,7 @@ def modify_destination_x(request, package_id):
 @csrf_protect
 def modify_destination_y(request, package_id):
     if request.method == "POST":
-        modify_destination_y_form = ModifyDestinationYForm(request.POST, instance = Package.objects.filter(id = package_id)[0])
+        modify_destination_y_form = ModifyDestinationYForm(request.POST, instance = Package.objects.filter(package_id = package_id)[0])
         if modify_destination_y_form.is_valid():
           modify_destination_y_form.save()
           return redirect('/see_packages')
@@ -167,7 +167,7 @@ def modify_destination_y(request, package_id):
 
 @csrf_protect
 def see_products(request, package_id):
-    package = Package.objects.filter(id = package_id)[0]
+    package = Package.objects.filter(package_id = package_id)[0]
     context = {
         'products' : package.product_set.all()
     }
