@@ -1,0 +1,13 @@
+1、Suppose there are many requests from Amazon at the same time. If UPS finds the same idle
+     truck, the database possibly have concurrency issues.
+2、If the user is a user of Amazon but not a user of UPS, and if he buys something at Amazon, then
+     he cannot log in to UPS, so he cannot see his all packages on packages. He can only see his
+     packages by tracking numbers, because tracking a package does not require him to login.
+3、We cannot deal with many requests. If the number of requests is super big, there probably be
+      overflow issues.
+4、If the flakness is high, the communication between Amazon and UPS may have problems.
+5、 We still have some useless web pages.
+6、If we do not successfully send the commands to the world due to the connection close, the
+     current shipment will be stuck at the current status.
+
+      
