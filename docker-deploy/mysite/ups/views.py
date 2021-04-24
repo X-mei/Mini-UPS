@@ -11,11 +11,11 @@ from .models import *
 from src.server import Server
 from django.core.mail import send_mail
 
-# print("Initiating server...")
-# Truck.objects.all().delete()
-# Package.objects.all().delete()
-# Product.objects.all().delete()
-# server = Server()
+print("Initiating server...")
+Truck.objects.all().delete()
+Package.objects.all().delete()
+Product.objects.all().delete()
+server = Server()
 
 
 

@@ -6,9 +6,9 @@ from .database import *
 # from database import Database
 import threading
 
-world_host = 'vcm-18172.vm.duke.edu'
-ups_host = 'vcm-19617.vm.duke.edu'
-#ups_host = '127.0.0.1'
+world_host = 'vcm-19617.vm.duke.edu'
+#ups_host = 'vcm-18172.vm.duke.edu'
+ups_host = '0.0.0.0'
 world_port = 12345
 
 #amazon_host = 'vcm-18235.vm.duke.edu'

@@ -106,7 +106,8 @@ from . import world_ups_pb2
 #connect with the database
 def db_connect():
     try:
-        conn = psycopg2.connect(database='postgres', user='postgres', password="passw0rd", host='127.0.0.1', port='5432')
+        # conn = psycopg2.connect(database='postgres', user='postgres', password="passw0rd", host='127.0.0.1', port='5432')
+        conn = psycopg2.connect(database='postgres', user='postgres', password="passw0rd", host='db', port='5432')
         # print("Connected to database successfully.")
         return conn
     except:
