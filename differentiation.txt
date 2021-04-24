@@ -1,0 +1,17 @@
+1、Feedback
+     This function needs user to log in. If not, it will go to login page.  
+     Users can give us feedbacks by filling a form. This form contains name, email, and message.
+     The name must be same with the username of the login user. If not, he cannot send the message.
+     The email must be same with the registered email of the login user.
+     If he sends this message successfully, then this message will be saved in the database, the 
+     administrator can see all messages.
+2、Send email
+     If the user sends a message successfully, then he will receive an email from our gmail mailbox.
+3、Finish notification
+     Our UPS sends the package arrived message to Amazon, and Amazon can display the
+     order finished status.
+4、Tracking packages and see packages
+     Tracking packages function only requires a user to input a package number. Tracking packages 
+     function does not need the user to log in. 
+     Seeing packages function require a user to log in. Once he logs into UPS, then he can see 
+     all packages belonging to him, and he can see all items inside packages.
